@@ -1,0 +1,13 @@
+{
+  "default_integration": "codex",
+  "installed_integrations": ["codex"],
+  "integration_settings": {
+    "codex": {
+      "mode": "skills",
+      "skills_dir": ".agents/skills",
+      "context_file": "AGENTS.md",
+      "script": "ps"
+    }
+  },
+  "integration_state_schema": 1
+}

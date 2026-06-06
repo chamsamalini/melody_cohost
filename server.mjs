@@ -15,6 +15,10 @@ const model = process.env.OPENAI_REALTIME_MODEL || "gpt-realtime";
 const voice = process.env.OPENAI_REALTIME_VOICE || "marin";
 const transcriptionModel =
   process.env.OPENAI_TRANSCRIPTION_MODEL || "gpt-4o-mini-transcribe";
+const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY || "";
+const elevenLabsVoiceId = process.env.ELEVENLABS_VOICE_ID || "";
+const elevenLabsModelId = process.env.ELEVENLABS_MODEL_ID || "eleven_turbo_v2_5";
+const elevenLabsEnabled = Boolean(elevenLabsApiKey && elevenLabsVoiceId);
 
 function loadLocalEnv() {
   const envPath = join(rootDir, ".env");
@@ -45,20 +49,26 @@ function loadLocalEnv() {
 
 const melodyInstructions = `
 # Role
-You are Melody, an AI co-host for a live event.
+You are Melody, an AI co-host for online meetings.
 
 # Activation
 - Before the app invites you by creating a response, remain silent.
 - Once invited, participate as a gracious co-host.
 - The app controls when you speak. Do not mention this control system.
 
-# Event Behavior
-- Welcome guests warmly when first activated.
+# Agenda
+- The meeting agenda may be supplied by the host through document content or verbal briefing.
+- Use only agenda details provided by the host or meeting participants.
+- Do not invent agenda items, decisions, owners, timelines, or outcomes.
+- If no agenda is available and agenda-specific help is needed, ask one concise clarifying question.
+
+# Meeting Behavior
+- Welcome meeting participants warmly when first activated.
 - Help the human host keep the conversation flowing.
 - Converse naturally with participants when directly addressed or when a response is clearly useful.
 - Keep responses short: usually one to three sentences.
-- Ask one clear question when the guest's meaning is uncertain.
-- Avoid dominating the event. Make space for the human host.
+- Ask one clear question when a participant's meaning is uncertain.
+- Avoid dominating the meeting. Make space for the human host.
 
 # Cultural Style
 - Use a warm, respectful, calm hosting style common in many Asian professional settings.
@@ -75,7 +85,7 @@ You are Melody, an AI co-host for a live event.
 const sessionConfig = JSON.stringify({
   type: "realtime",
   model,
-  output_modalities: ["audio"],
+  output_modalities: elevenLabsEnabled ? ["text"] : ["audio"],
   audio: {
     input: {
       transcription: {
@@ -150,6 +160,63 @@ async function createRealtimeCall(sdp) {
   return body;
 }
 
+async function synthesizeWithElevenLabs(text) {
+  if (!elevenLabsEnabled) {
+    const error = new Error("ElevenLabs is not configured.");
+    error.statusCode = 503;
+    throw error;
+  }
+
+  const response = await fetch(
+    `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(
+      elevenLabsVoiceId
+    )}/stream?output_format=mp3_44100_128&optimize_streaming_latency=3`,
+    {
+      method: "POST",
+      headers: {
+        "xi-api-key": elevenLabsApiKey,
+        "Content-Type": "application/json",
+        Accept: "audio/mpeg"
+      },
+      body: JSON.stringify({
+        text,
+        model_id: elevenLabsModelId,
+        voice_settings: {
+          stability: 0.35,
+          similarity_boost: 0.75,
+          style: 0.2,
+          use_speaker_boost: true
+        }
+      })
+    }
+  );
+
+  if (!response.ok) {
+    const body = await response.text();
+    const error = new Error(body || "ElevenLabs synthesis failed.");
+    error.statusCode = response.status;
+    throw error;
+  }
+
+  if (!response.body) {
+    const error = new Error("ElevenLabs response stream is unavailable.");
+    error.statusCode = 502;
+    throw error;
+  }
+
+  return response.body;
+}
+
+async function pipeWebStreamToNode(webStream, res) {
+  const reader = webStream.getReader();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    res.write(Buffer.from(value));
+  }
+  res.end();
+}
+
 async function serveStatic(req, res) {
   const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   const requestedPath = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -185,7 +252,10 @@ const server = createServer(async (req, res) => {
         model,
         voice,
         transcriptionModel,
-        hasApiKey: Boolean(process.env.OPENAI_API_KEY)
+        hasApiKey: Boolean(process.env.OPENAI_API_KEY),
+        elevenLabsEnabled,
+        hasElevenLabsKey: Boolean(elevenLabsApiKey),
+        hasElevenLabsVoice: Boolean(elevenLabsVoiceId)
       });
       return;
     }
@@ -203,6 +273,31 @@ const server = createServer(async (req, res) => {
         "Content-Length": Buffer.byteLength(answer)
       });
       res.end(answer);
+      return;
+    }
+
+    if (req.method === "POST" && req.url === "/tts") {
+      const requestBody = await readRequestBody(req);
+      let payload;
+      try {
+        payload = JSON.parse(requestBody || "{}");
+      } catch {
+        sendJson(res, 400, { error: "Invalid JSON body." });
+        return;
+      }
+
+      const text = typeof payload.text === "string" ? payload.text.trim() : "";
+      if (!text) {
+        sendJson(res, 400, { error: "Missing text for synthesis." });
+        return;
+      }
+
+      const audioStream = await synthesizeWithElevenLabs(text);
+      res.writeHead(200, {
+        "Content-Type": "audio/mpeg",
+        "Cache-Control": "no-store"
+      });
+      await pipeWebStreamToNode(audioStream, res);
       return;
     }
 
