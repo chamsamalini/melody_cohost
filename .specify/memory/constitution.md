@@ -26,6 +26,14 @@ OpenAI credentials and runtime secrets must remain in `.env` or environment vari
 
 At minimum, run `npm.cmd run check` before considering server changes complete. Browser-facing changes require a local run at `http://localhost:8787` and a manual interaction check for the affected host-console workflow.
 
+### VII. Amendment Traceability
+
+When a user provides an amendment to active feature scope, requirements, behavior, or validation, the amendment must be logged and reflected in Spec Kit artifacts in the same working cycle. The canonical amendment log is `specs/<feature>/amendments.md`.
+
+### VIII. Dual-Target Parity
+
+When a feature supports both desktop and web/AWS runtime targets, amendments must be evaluated and reflected for both targets unless the user explicitly scopes the amendment to one target.
+
 ## Technical Constraints
 
 - The app targets a modern browser with microphone access.
@@ -42,9 +50,11 @@ At minimum, run `npm.cmd run check` before considering server changes complete. 
 - Prefer small, independently verifiable tasks that name exact files.
 - Do not add dependencies, build tools, or deployment machinery unless the active spec and plan justify them.
 - Preserve the current local run path: `npm.cmd start` and `run-app.bat`.
+- For amendment requests, update `specs/<feature>/amendments.md` and synchronize all impacted artifacts before closing the request.
+- For dual-target requests, keep desktop runtime artifacts and web/AWS deployment artifacts in parity for applicable behavior and configuration.
 
 ## Governance
 
-This constitution supersedes conflicting implementation preferences in specs, plans, tasks, or ad-hoc prompts. Amendments require updating this file, checking related templates for consistency, and documenting why the governance change is needed.
+This constitution supersedes conflicting implementation preferences in specs, plans, tasks, or ad-hoc prompts. Governance amendments require updating this file, checking related templates for consistency, and documenting why the governance change is needed. Feature amendments require updating the feature amendment log and synchronized artifacts.
 
-**Version**: 1.1.0 | **Ratified**: 2026-06-06 | **Last Amended**: 2026-06-06
+**Version**: 1.3.0 | **Ratified**: 2026-06-06 | **Last Amended**: 2026-06-07

@@ -15,6 +15,12 @@ const state = {
   agendaSource: "none",
   capturingAgenda: false,
   assistantTranscript: "",
+  responseDelayMs: 3000,
+  pendingResponseTimer: null,
+  pendingResponseReason: "",
+  pendingAudienceText: "",
+  queuedResponseReason: "",
+  queuedAudienceText: "",
   useElevenLabs: false,
   ttsPlaying: false,
   ttsAbortController: null,
@@ -251,6 +257,33 @@ ${state.agendaText}
 `.trim();
 }
 
+function eventTitleFromAgenda() {
+  if (!state.agendaText) return "";
+  const match = state.agendaText.match(/(?:event\s*title|title)\s*[:\-]\s*([^.;\n]+)/i);
+  return (match?.[1] || "").trim();
+}
+
+function meetingScopeInstructions() {
+  const eventTitle = eventTitleFromAgenda();
+  if (eventTitle) {
+    return `
+Scope boundary:
+- Stay within the current event context.
+- Stay aligned to the event title: ${eventTitle}.
+- Keep discussion tied to the audience conversation topic.
+- If asked an unrelated personal or social question, decline briefly and redirect to the event topic with one concise question.
+`.trim();
+  }
+
+  return `
+Scope boundary:
+- Stay within the current event context.
+- Stay aligned to the event title when provided by host or audience.
+- Keep discussion tied to the audience conversation topic.
+- If asked an unrelated personal or social question, decline briefly and redirect to the event topic with one concise question.
+`.trim();
+}
+
 function triggerPattern() {
   const escaped = state.triggerName
     .trim()
@@ -308,6 +341,11 @@ function clearTtsAudioUrl() {
 
 function isAbortError(error) {
   return error?.name === "AbortError";
+}
+
+function shouldFallbackToRealtimeAudio(message) {
+  if (!message) return false;
+  return /paid_plan_required|payment_required|library voices/i.test(message);
 }
 
 function supportsMpegStreaming() {
@@ -506,7 +544,15 @@ async function speakWithElevenLabs(text) {
     }
   } catch (error) {
     if (!isAbortError(error)) {
-      appendEvent(error.message || "ElevenLabs audio failed.");
+      const message = error.message || "ElevenLabs audio failed.";
+      appendEvent(message);
+
+      // If ElevenLabs rejects synthesis due to plan/voice restrictions,
+      // continue with native Realtime audio for later turns.
+      if (shouldFallbackToRealtimeAudio(message)) {
+        state.useElevenLabs = false;
+        appendEvent("Falling back to OpenAI Realtime audio.");
+      }
     }
   } finally {
     state.ttsAbortController = null;
@@ -515,6 +561,7 @@ async function speakWithElevenLabs(text) {
     els.remoteAudio.removeAttribute("src");
     els.remoteAudio.load();
     state.waitingForResponse = false;
+    flushQueuedResponse();
   }
 }
 
@@ -529,8 +576,13 @@ You are Melody, the online meeting co-host.
 Current app state: ${state.mode}.
 Reason for this turn: ${reason}.
 ${agendaInstructions()}
+${meetingScopeInstructions()}
 ${extraInstructions}
-Use the conversation so far. Keep the response warm, concise, and useful.
+Use the conversation so far and stay strictly within the current meeting context.
+Do not drift into unrelated topics.
+Digest the participant's latest message before responding.
+If the participant response is unclear, missing detail, or ambiguous, ask one concise clarifying probe question.
+Keep the response warm, concise, and useful.
 If this is your first spoken turn, welcome the meeting participants and acknowledge the host briefly.
 `.trim();
 
@@ -548,17 +600,92 @@ If this is your first spoken turn, welcome the meeting participants and acknowle
   }
 }
 
-function activateMelody(source) {
+function clearPendingResponse(reason = "") {
+  if (!state.pendingResponseTimer) return;
+  clearTimeout(state.pendingResponseTimer);
+  state.pendingResponseTimer = null;
+  state.pendingResponseReason = "";
+  state.pendingAudienceText = "";
+  if (reason) {
+    appendEvent(reason);
+  }
+}
+
+function scheduleMelodyResponse(reason, audienceText = "") {
+  const guestText = (audienceText || "").trim();
+
+  if (!state.connected || state.mode !== "active") {
+    return;
+  }
+
+  if (state.waitingForResponse) {
+    state.queuedResponseReason = reason;
+    state.queuedAudienceText = guestText;
+    appendEvent("Melody queued the next turn after the current response.");
+    return;
+  }
+
+  clearPendingResponse();
+  state.pendingResponseReason = reason;
+  state.pendingAudienceText = guestText;
+
+  appendEvent(
+    `Waiting ${Math.round(state.responseDelayMs / 1000)} seconds for follow-up before responding.`
+  );
+
+  state.pendingResponseTimer = setTimeout(() => {
+    const scheduledReason = state.pendingResponseReason || reason;
+    const scheduledText = state.pendingAudienceText;
+    state.pendingResponseTimer = null;
+    state.pendingResponseReason = "";
+    state.pendingAudienceText = "";
+
+    const followUpInstructions = scheduledText
+      ? `Latest participant message: "${scheduledText}"\nAcknowledge this message directly and keep your reply anchored to it.`
+      : "";
+
+    createMelodyResponse(scheduledReason, followUpInstructions);
+  }, state.responseDelayMs);
+}
+
+function flushQueuedResponse() {
+  if (!state.queuedResponseReason) return;
+
+  const queuedReason = state.queuedResponseReason;
+  const queuedText = state.queuedAudienceText;
+  state.queuedResponseReason = "";
+  state.queuedAudienceText = "";
+  scheduleMelodyResponse(queuedReason, queuedText);
+}
+
+function activateMelody(source, options = {}) {
   if (!state.connected) return;
+
+  const immediateWelcome = options.immediateWelcome !== false;
+  const audienceText = options.audienceText || "";
+
+  clearPendingResponse();
+  state.queuedResponseReason = "";
+  state.queuedAudienceText = "";
+
   setMode("active");
   appendEvent(`Melody activated by ${source}.`);
-  createMelodyResponse(
-    "activation",
-    "The host or participant has invited you by name. Welcome everyone to the online meeting and offer a brief, natural opening."
-  );
+
+  if (immediateWelcome) {
+    createMelodyResponse(
+      "activation",
+      "The host or participant has invited you by name. Welcome everyone to the online meeting and offer a brief, natural opening."
+    );
+    return;
+  }
+
+  scheduleMelodyResponse("direct address", audienceText);
 }
 
 function pauseMelody() {
+  clearPendingResponse("Pending response canceled while paused.");
+  state.queuedResponseReason = "";
+  state.queuedAudienceText = "";
   setMode("paused");
   appendEvent("Melody paused.");
 }
@@ -572,7 +699,10 @@ function handleTranscript(text) {
   }
 
   if (state.mode !== "active" && wasMelodyCalled(text)) {
-    activateMelody("voice trigger");
+    activateMelody("voice trigger", {
+      immediateWelcome: false,
+      audienceText: text
+    });
     return;
   }
 
@@ -580,7 +710,7 @@ function handleTranscript(text) {
     const reason = wasMelodyCalled(text)
       ? "direct address"
       : "active co-host conversation";
-    createMelodyResponse(reason);
+    scheduleMelodyResponse(reason, text);
   }
 }
 
@@ -596,6 +726,7 @@ function handleServerEvent(event) {
 
     case "input_audio_buffer.speech_started":
       appendEvent("Speech started.");
+      clearPendingResponse("Follow-up detected. Re-evaluating before responding.");
       if (state.useElevenLabs && (state.ttsPlaying || state.ttsAbortController)) {
         stopElevenLabsPlayback("User speech detected. Melody interrupted.");
       }
@@ -645,6 +776,7 @@ function handleServerEvent(event) {
         void speakWithElevenLabs(melodyText);
       } else {
         state.waitingForResponse = false;
+        flushQueuedResponse();
       }
       break;
     }
@@ -655,11 +787,13 @@ function handleServerEvent(event) {
       if (state.useElevenLabs) {
         stopElevenLabsPlayback("Melody response canceled.");
       }
+      flushQueuedResponse();
       break;
 
     case "error":
       state.waitingForResponse = false;
       appendEvent(event.error?.message || "Realtime error.");
+      flushQueuedResponse();
       break;
 
     default:
@@ -796,6 +930,9 @@ async function connect() {
 }
 
 function disconnect() {
+  clearPendingResponse();
+  state.queuedResponseReason = "";
+  state.queuedAudienceText = "";
   stopElevenLabsPlayback("Session stopped.");
 
   if (state.dc) {
@@ -836,7 +973,9 @@ async function newSession() {
 
 els.connectButton.addEventListener("click", connect);
 els.disconnectButton.addEventListener("click", disconnect);
-els.activateButton.addEventListener("click", () => activateMelody("host button"));
+els.activateButton.addEventListener("click", () =>
+  activateMelody("host button", { immediateWelcome: true })
+);
 els.pauseButton.addEventListener("click", pauseMelody);
 els.newSessionButton.addEventListener("click", newSession);
 els.clearLogButton.addEventListener("click", () => els.transcriptLog.replaceChildren());

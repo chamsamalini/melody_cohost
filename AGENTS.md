@@ -14,6 +14,16 @@ Use the local Spec Kit artifacts in this order:
 5. `$speckit-analyze` reviews `spec.md`, `plan.md`, and `tasks.md` before implementation.
 6. `$speckit-implement` executes tasks according to the plan.
 
+### Amendment Auto-Inclusion Rule
+
+When the user provides an amendment to an active feature, treat it as a required Spec Kit update immediately:
+
+1. Append the amendment to `specs/<feature>/amendments.md` with date and requested change.
+2. Reflect the amendment in the impacted artifacts (`spec.md`, `plan.md`, `tasks.md`, and when relevant `analysis.md` or `implement.md`) in the same working session.
+3. Keep amendment wording traceable by preserving the original request intent in the log.
+4. Do not defer amendment capture to a later step unless the user explicitly asks to postpone.
+5. For dual-target features, reflect amendment impacts for both desktop and web/AWS paths in the same session.
+
 Core command markdown lives in `.specify/templates/commands/`.
 Document templates live in `.specify/templates/`.
 PowerShell support scripts live in `.specify/scripts/powershell/`.

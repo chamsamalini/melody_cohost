@@ -23,6 +23,13 @@ Before `speckit.specify`:
 - Inspect `public/app.js` when a feature touches activation, transcript, WebRTC, trigger detection, agenda context, or audio behavior.
 - Inspect `server.mjs` when a feature touches session creation, environment variables, model, voice, VAD, transcription, prompt behavior, or static file serving.
 
+For amendment requests (applies to all Spec Kit commands):
+
+- Record each amendment in `specs/<feature>/amendments.md` before finalizing the response.
+- Update impacted Spec Kit artifacts in the same pass (`spec.md`, `plan.md`, `tasks.md`, and if relevant `analysis.md` or `implement.md`).
+- Keep amendment entries concise and traceable: date, request summary, touched files.
+- For dual-target work, confirm amendment impact coverage for both desktop and web/AWS deployment paths.
+
 Before `speckit.plan`:
 
 - Read `.specify/memory/constitution.md`.

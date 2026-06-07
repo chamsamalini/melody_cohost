@@ -140,6 +140,14 @@ The host can pause Melody, stop the session, clear visible transcript, or start 
 - **FR-038**: If Melody is activated before any agenda has been provided, Melody MUST ask a concise agenda-clarifying question or give only general meeting support.
 - **FR-039**: The host MUST be able to replace the current agenda during the same meeting session.
 - **FR-040**: Agenda context MUST be included in Melody response requests when available.
+- **FR-041**: After a participant turn completes, the app MUST wait approximately three seconds before requesting Melody's response so follow-up participant speech can continue without rushing.
+- **FR-042**: If additional participant speech starts during the response-wait window, the pending response MUST be deferred and re-evaluated from the latest participant message.
+- **FR-043**: Melody responses MUST stay anchored to the current meeting context and the latest participant message, avoiding unrelated topic drift.
+- **FR-044**: When participant intent is unclear or missing detail, Melody MUST ask one concise probing clarification question before giving a full answer.
+- **FR-045**: Melody MUST keep conversational scope limited to the active event context, the event title when provided, and audience conversation based on the current topic; off-topic personal/social requests MUST be declined briefly and redirected back to topic.
+- **FR-046**: The project MUST support desktop execution as a packaged application that runs the same host console and server behavior locally on Windows.
+- **FR-047**: The project MUST support a web deployment target on AWS that runs the same host console and server behavior over HTTPS.
+- **FR-048**: Accepted feature amendments MUST be evaluated and reflected across both desktop and web/AWS targets unless explicitly scoped to one target.
 
 ## Non-Functional Requirements
 
@@ -160,6 +168,8 @@ The host can pause Melody, stop the session, clear visible transcript, or start 
 - **NFR-015 Agenda Accuracy**: Melody SHOULD distinguish supplied agenda facts from inferred context and should ask for clarification instead of guessing missing agenda details.
 - **NFR-016 Agenda Update Latency**: Agenda status changes SHOULD appear in the host console within one second after the host submits document or verbal agenda content.
 - **NFR-017 Document Safety**: Document agenda intake SHOULD reject unsupported or unreadable content with a clear message rather than silently misprocessing it.
+- **NFR-018 Response Pacing**: The host-visible behavior SHOULD avoid rushed turn-taking by applying a brief post-turn hold before Melody responds.
+- **NFR-019 Dual-Target Consistency**: Desktop and web/AWS targets SHOULD preserve equivalent functional behavior for activation flow, agenda handling, context constraints, and safety controls.
 
 ## Key Entities
 

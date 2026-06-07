@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.specify
+.agents
+tests
+test-results
+playwright-report
+dist
+release
+*.log
+.env
+*.zip
