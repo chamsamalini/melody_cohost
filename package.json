@@ -1,16 +1,16 @@
 {
-  "name": "melody-cohost",
+  "name": "juno-cohost",
   "version": "1.0.0",
-  "description": "Melody online meeting co-host voice agent",
-  "author": "Melody Co-Host Team",
+  "description": "Juno online meeting co-host voice agent",
+  "author": "Juno Co-Host Team",
   "private": true,
   "main": "desktop/main.cjs",
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
     "web:start": "node server.mjs",
-    "web:docker:build": "docker build -t melody-cohost:web .",
-    "web:docker:run": "docker run --rm -p 8080:8080 --env-file .env melody-cohost:web",
+    "web:docker:build": "docker build -t juno-cohost:web .",
+    "web:docker:run": "docker run --rm -p 8080:8080 --env-file .env juno-cohost:web",
     "check": "node --check server.mjs && node --check public/app.js && node --check desktop/main.cjs",
     "desktop:start": "electron .",
     "desktop:pack:win": "electron-builder --win portable",
@@ -27,8 +27,8 @@
     "electron-builder": "^25.1.8"
   },
   "build": {
-    "appId": "com.melodycohost.app",
-    "productName": "Melody Co-Host",
+    "appId": "com.junocohost.app",
+    "productName": "Juno Co-Host",
     "files": [
       "desktop/**",
       "public/**",
@@ -39,7 +39,7 @@
     "win": {
       "target": ["portable"],
       "signAndEditExecutable": false,
-      "artifactName": "Melody-CoHost-${version}.${ext}"
+      "artifactName": "Juno-CoHost-${version}.${ext}"
     }
   }
 }

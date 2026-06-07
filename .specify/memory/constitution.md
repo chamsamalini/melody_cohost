@@ -1,4 +1,4 @@
-# Melody Co-Host Constitution
+# Juno Co-Host Constitution
 
 ## Core Principles
 
@@ -8,11 +8,11 @@ Every meaningful feature or behavior change must start with a clear specificatio
 
 ### II. Online Meeting Scope, Host Control, and Participant Trust
 
-Melody is only for online meetings. Melody must only speak when the host activates her or when the application explicitly decides a response is appropriate. Features must protect meeting trust by avoiding surprise speech, hidden recording behavior, misleading identity claims, fake accents, stereotypes, or responses that dominate the human host.
+Juno is only for online meetings. Juno must only speak when the host activates her or when the application explicitly decides a response is appropriate. Features must protect meeting trust by avoiding surprise speech, hidden recording behavior, misleading identity claims, fake accents, stereotypes, or responses that dominate the human host.
 
 ### III. Agenda Grounding
 
-Meeting agenda context must come from the host through document content or a verbal briefing. Melody must use supplied agenda details to support the meeting flow and must ask for clarification instead of inventing agenda items, decisions, owners, or outcomes.
+Meeting agenda context must come from the host through document content or a verbal briefing. Juno must use supplied agenda details to support the meeting flow and must ask for clarification instead of inventing agenda items, decisions, owners, or outcomes.
 
 ### IV. Minimal, Inspectable Architecture
 

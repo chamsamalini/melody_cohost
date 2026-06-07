@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 210" role="img" aria-labelledby="title desc">
+  <title id="title">Juno wordmark</title>
+  <desc id="desc">A simple Juno wordmark with a large rounded purple J followed by uno.</desc>
+  <path d="M126 56h47v82c0 45-32 74-82 74-36 0-64-17-80-48l37-20c9 18 22 27 42 27 23 0 36-15 36-40V56Z" fill="#6f2df2"/>
+  <circle cx="150" cy="42" r="31" fill="#6f2df2"/>
+  <text x="196" y="146" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="94" font-weight="800" letter-spacing="-1">uno</text>
+</svg>

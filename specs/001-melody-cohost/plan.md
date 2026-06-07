@@ -1,4 +1,4 @@
-# Implementation Plan: Melody Online Meeting Co-Host Voice Agent
+# Implementation Plan: Juno Online Meeting Co-Host Voice Agent
 
 **Feature Directory**: `specs/001-melody-cohost`
 **Date**: 2026-06-06
@@ -7,7 +7,7 @@
 
 ## Summary
 
-Build and maintain a local browser console for Melody, an AI online-meeting co-host. The system uses a minimal Node.js server to serve static assets and create OpenAI Realtime WebRTC sessions. The browser controls microphone capture, data-channel events, transcript display, activation rules, host controls, and meeting agenda context supplied by document or verbal briefing.
+Build and maintain a local browser console for Juno, an AI online-meeting co-host. The system uses a minimal Node.js server to serve static assets and create OpenAI Realtime WebRTC sessions. The browser controls microphone capture, data-channel events, transcript display, activation rules, host controls, and meeting agenda context supplied by document or verbal briefing.
 
 ## Technical Context
 
@@ -18,7 +18,7 @@ Build and maintain a local browser console for Melody, an AI online-meeting co-h
 - **Target Platform**: Local Windows-friendly development environment and modern browser.
 - **Project Type**: Local web app with server-side session endpoint.
 - **Performance Goals**: Immediate UI state changes under normal local conditions; Realtime latency depends on network/model service.
-- **Constraints**: API key remains server-side; app must not auto-speak without host/app response request; Melody is scoped to online meetings only.
+- **Constraints**: API key remains server-side; app must not auto-speak without host/app response request; Juno is scoped to online meetings only.
 - **Scale/Scope**: Single local host console for one online meeting at a time.
 
 ## Constitution Check
@@ -63,7 +63,7 @@ run-app.bat
 4. Keep host controls and semantic UI in `public/index.html`.
 5. Keep visual polish and responsive layout in `public/styles.css`.
 6. Keep local startup simple through `npm.cmd start` and `run-app.bat`.
-7. Add agenda context state in the browser so document and verbal agenda inputs can feed Melody response instructions.
+7. Add agenda context state in the browser so document and verbal agenda inputs can feed Juno response instructions.
 8. Keep agenda processing lightweight in the baseline: structure provided content into topics, objectives, order, decisions, and expected outcomes without adding persistence.
 
 ## Requirement Mapping
@@ -84,12 +84,12 @@ run-app.bat
 - Open `http://localhost:8787`.
 - Verify `/health` returns non-secret readiness metadata.
 - Connect with a browser microphone and confirm observing mode.
-- Confirm Melody does not speak until activated.
+- Confirm Juno does not speak until activated.
 - Provide agenda content through the document path and confirm agenda status updates.
 - Provide agenda content verbally and confirm agenda status updates.
-- Confirm Melody uses supplied agenda context when activated.
-- Confirm Melody asks for agenda clarification or stays general when no agenda exists.
-- Confirm **Activate Melody**, trigger-name activation, **Pause Melody**, **Stop**, **New Session**, and **Clear** behavior.
+- Confirm Juno uses supplied agenda context when activated.
+- Confirm Juno asks for agenda clarification or stays general when no agenda exists.
+- Confirm **Activate Juno**, trigger-name activation, **Pause Juno**, **Stop**, **New Session**, and **Clear** behavior.
 - Confirm missing `OPENAI_API_KEY` yields a readable error.
 
 ## Risks and Mitigations
@@ -99,5 +99,5 @@ run-app.bat
 - **Unwanted speech**: Preserve disabled automatic Realtime responses and app-controlled `response.create`.
 - **Agenda hallucination**: Include agenda context explicitly in response instructions and require clarification when agenda details are missing.
 - **Document parsing ambiguity**: Start with readable document text content; defer richer file parsing until a future spec if needed.
-- **Prompt drift**: Keep Melody behavior requirements in constitution, spec, and server instructions.
+- **Prompt drift**: Keep Juno behavior requirements in constitution, spec, and server instructions.
 - **Over-complexity**: Avoid adding dependencies for baseline requirements.

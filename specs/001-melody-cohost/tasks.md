@@ -1,11 +1,11 @@
-# Tasks: Melody Online Meeting Co-Host Voice Agent
+# Tasks: Juno Online Meeting Co-Host Voice Agent
 
 **Feature Directory**: `specs/001-melody-cohost`
 **Input**: `spec.md`, `plan.md`, and current project files
 
 ## Phase 1: Spec Kit Setup
 
-- [x] T001 Review `.specify/memory/constitution.md` against the Melody online-meeting problem statement.
+- [x] T001 Review `.specify/memory/constitution.md` against the Juno online-meeting problem statement.
 - [x] T002 Review `.specify/context-augmentation.md` for complete repository grounding.
 - [x] T003 Confirm `AGENTS.md` points to the active feature artifacts.
 
@@ -19,13 +19,13 @@
 - [x] T009 Verify manual activation, pause, stop, new session, and clear controls in `public/app.js`.
 - [x] T010 Verify trigger-name matching is case-insensitive and whole-word based in `public/app.js`.
 - [x] T011 Verify transcript and activity log behavior in `public/app.js` and `public/index.html`.
-- [x] T012 Verify Melody prompt safety instructions in `server.mjs`.
+- [x] T012 Verify Juno prompt safety instructions in `server.mjs`.
 - [x] T013 Update user-facing copy from live-event framing to online-meeting framing in `README.md`, `server.mjs`, and `public/index.html`.
 - [x] T014 Add document-based agenda input controls and agenda status display in `public/index.html`.
 - [x] T015 Add agenda state, document agenda processing, agenda replacement, and status updates in `public/app.js`.
 - [x] T016 Add verbal agenda capture flow using transcript events in `public/app.js`.
-- [x] T017 Include agenda context in Melody response instructions in `public/app.js`.
-- [x] T018 Add safeguards so Melody asks for agenda clarification instead of inventing agenda details in `public/app.js` and `server.mjs`.
+- [x] T017 Include agenda context in Juno response instructions in `public/app.js`.
+- [x] T018 Add safeguards so Juno asks for agenda clarification instead of inventing agenda details in `public/app.js` and `server.mjs`.
 
 ## Phase 3: Non-Functional Requirement Verification
 

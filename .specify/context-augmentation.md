@@ -4,9 +4,9 @@ Use this file to ground Spec Kit work in the real repository before writing or c
 
 ## Repository Snapshot
 
-- Project: Melody Co-Host Voice Agent
-- Purpose: Browser host console for an AI online-meeting co-host named Melody.
-- Problem statement: Online meeting hosts need Melody to listen through a Realtime WebRTC session, process a meeting agenda supplied by document or verbal briefing, stay silent while observing, and speak only when activated by the host or addressed by the configured trigger name.
+- Project: Juno Co-Host Voice Agent
+- Purpose: Browser host console for an AI online-meeting co-host named Juno.
+- Problem statement: Online meeting hosts need Juno to listen through a Realtime WebRTC session, process a meeting agenda supplied by document or verbal briefing, stay silent while observing, and speak only when activated by the host or addressed by the configured trigger name.
 - Runtime: Node.js static server plus OpenAI Realtime WebRTC session endpoint.
 - Main server file: `server.mjs`
 - Browser UI: `public/index.html`
@@ -53,5 +53,5 @@ Before `speckit.implement`:
 - The app is expected to run at `http://localhost:8787`.
 - This is a small local app, not a multi-service deployment.
 - Functional and non-functional requirements for the baseline are captured in `specs/001-melody-cohost/spec.md`.
-- Melody is scoped to online meetings only.
-- The meeting agenda must be provided by the host through document content or verbal briefing before Melody can provide agenda-specific help.
+- Juno is scoped to online meetings only.
+- The meeting agenda must be provided by the host through document content or verbal briefing before Juno can provide agenda-specific help.

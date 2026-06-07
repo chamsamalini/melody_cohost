@@ -16,7 +16,7 @@ if not exist ".env" (
   exit /b 1
 )
 
-echo Starting Melody Co-Host...
+echo Starting Juno Co-Host...
 echo.
 echo App URL: http://localhost:8787
 echo Press Ctrl+C in this window to stop the server.

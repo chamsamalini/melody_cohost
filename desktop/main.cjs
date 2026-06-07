@@ -49,7 +49,7 @@ async function startServer() {
   try {
     await import(pathToFileURL(serverPath).href);
   } catch (error) {
-    // If another local process is already serving Melody on this port,
+    // If another local process is already serving Juno on this port,
     // reuse it instead of failing desktop startup.
     const message = error?.message || "";
     if (!message.includes("EADDRINUSE")) {
@@ -117,7 +117,7 @@ app.whenReady().then(async () => {
   try {
     await launchDesktopApp();
   } catch (error) {
-    dialog.showErrorBox("Melody Desktop Startup Error", error.message || "Unknown startup error.");
+    dialog.showErrorBox("Juno Desktop Startup Error", error.message || "Unknown startup error.");
     app.quit();
   }
 
@@ -126,7 +126,7 @@ app.whenReady().then(async () => {
       try {
         await launchDesktopApp();
       } catch (error) {
-        dialog.showErrorBox("Melody Desktop Startup Error", error.message || "Unknown startup error.");
+        dialog.showErrorBox("Juno Desktop Startup Error", error.message || "Unknown startup error.");
         app.quit();
       }
     }

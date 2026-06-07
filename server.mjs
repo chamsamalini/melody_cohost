@@ -47,9 +47,9 @@ function loadLocalEnv() {
   }
 }
 
-const melodyInstructions = `
+const junoInstructions = `
 # Role
-You are Melody, an AI co-host for online meetings.
+You are Juno, an AI co-host for online meetings.
 
 # Activation
 - Before the app invites you by creating a response, remain silent.
@@ -106,7 +106,7 @@ const sessionConfig = JSON.stringify({
       voice
     }
   },
-  instructions: melodyInstructions
+  instructions: junoInstructions
 });
 
 const contentTypes = new Map([
@@ -320,5 +320,5 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(port, () => {
-  console.log(`Melody co-host app running at http://localhost:${port}`);
+  console.log(`Juno co-host app running at http://localhost:${port}`);
 });

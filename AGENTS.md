@@ -1,4 +1,4 @@
-# Melody Co-Host Project Instructions
+# Juno Co-Host Project Instructions
 
 This project uses GitHub Spec Kit for spec-driven development. Treat `.specify/memory/constitution.md` as the governing project rules for future feature work.
 

@@ -3,13 +3,13 @@ import { expect, test } from "@playwright/test";
 test("renders host console defaults", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page).toHaveTitle(/Melody Co-Host Console/);
+  await expect(page).toHaveTitle(/Juno Co-Host Console/);
   await expect(page.getByText("Offline")).toBeVisible();
   await expect(page.getByText("Observing")).toBeVisible();
   await expect(page.getByRole("button", { name: "Connect" })).toBeEnabled();
   await expect(page.getByRole("button", { name: "Stop" })).toBeDisabled();
-  await expect(page.getByRole("button", { name: "Activate Melody" })).toBeDisabled();
-  await expect(page.getByRole("button", { name: "Pause Melody" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Activate Juno" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Pause Juno" })).toBeDisabled();
   await expect(page.locator("#agendaStatus")).toHaveText("No agenda provided");
   await expect(page.locator("#captureAgendaButton")).toBeDisabled();
 });

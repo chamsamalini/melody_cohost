@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Melody Co-Host Console</title>
+    <title>Juno Co-Host Console</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -11,91 +11,122 @@
   </head>
   <body>
     <main class="app-shell">
-      <header class="topbar">
-        <div class="brand-block">
-          <p class="eyebrow">Online meeting co-host</p>
-          <h1>Melody</h1>
-          <p class="subhead">Executive Meeting Command Center</p>
+      <header class="app-header">
+        <div class="header-left">
+          <div class="logo-card" role="img" aria-label="Juno">
+            <img class="brand-logo" src="/assets/juno-logo-wordmark.svg" alt="Juno" />
+          </div>
+          <div class="header-copy">
+            <p class="eyebrow">Coach controlled | private preview | enterprise grade</p>
+            <p class="subhead">your meeting cohost</p>
+          </div>
         </div>
-        <div class="status-stack" aria-live="polite">
-          <div class="status-card">
-            <span class="status-label">Connection</span>
-            <span id="connectionStatus" class="status-pill">Offline</span>
-          </div>
-          <div class="status-card">
-            <span class="status-label">Melody Mode</span>
-            <span id="modeStatus" class="status-pill mode-observing">Observing</span>
-          </div>
+        <div class="header-chips">
+          <span class="chip">Voice available</span>
+          <span class="chip">Storage off</span>
+          <span class="chip">Private preview</span>
         </div>
       </header>
 
-      <section class="stage-grid">
-        <section class="stage-panel" aria-label="Online meeting conversation">
+      <section class="workspace-grid">
+        <section class="panel" aria-label="Session">
+          <div class="panel-head">
+            <h2>Session</h2>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="triggerInput">Trigger name</label>
+            <input id="triggerInput" class="text-input" type="text" value="Juno" autocomplete="off" />
+          </div>
+
+          <div class="button-row">
+            <button id="connectButton" class="primary-button" type="button">Start Observation</button>
+            <button id="disconnectButton" class="secondary-button" type="button" disabled>End Session</button>
+          </div>
+
+          <div class="button-row compact">
+            <button id="newSessionButton" class="secondary-button" type="button">New Session</button>
+            <button id="clearLogButton" class="secondary-button" type="button">Clear Activity</button>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="agendaInput">Agenda topics</label>
+            <textarea id="agendaInput" class="text-area" rows="8" placeholder="Paste or update agenda context"></textarea>
+          </div>
+
+          <div id="agendaStatus" class="agenda-status" aria-live="polite">No agenda provided</div>
+
+          <div class="button-grid">
+            <button id="saveAgendaButton" class="primary-button" type="button">Save Agenda</button>
+            <button id="captureAgendaButton" class="secondary-button" type="button" disabled>Capture Verbal Agenda</button>
+            <button id="clearAgendaButton" class="secondary-button" type="button">Clear Agenda</button>
+          </div>
+        </section>
+
+        <section class="panel" aria-label="Host request">
+          <div class="panel-head inline-actions">
+            <h2>Host Request</h2>
+            <div class="button-row tiny">
+              <button id="activateButton" class="primary-button" type="button" disabled>Activate</button>
+              <button id="pauseButton" class="secondary-button" type="button" disabled>Pause</button>
+            </div>
+          </div>
+
+          <label class="toggle">
+            <input id="autoConverseToggle" type="checkbox" checked />
+            <span>Auto converse after activation</span>
+          </label>
+          <div id="autoConverseStatus" class="auto-converse-status" aria-live="polite">
+            Auto converse is enabled. Juno may respond after each participant turn while active.
+          </div>
+
           <div class="meter-wrap" aria-hidden="true">
             <div id="meter" class="meter"></div>
           </div>
 
-          <div class="transcript-head">
-            <h2>Conversation</h2>
-            <button id="clearLogButton" class="text-button" type="button">Clear</button>
+          <div class="field">
+            <label class="field-label">Activity</label>
+            <div id="eventLog" class="event-log" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="panel" aria-label="Private preview">
+          <div class="panel-head">
+            <h2>Private Preview</h2>
           </div>
 
           <div id="transcriptLog" class="transcript-log" aria-live="polite"></div>
+
+          <div class="button-row compact">
+            <button class="secondary-button" type="button" disabled>Copy</button>
+            <button class="secondary-button" type="button" disabled>Speak</button>
+            <button class="secondary-button" type="button" disabled>Download</button>
+          </div>
         </section>
 
-        <aside class="control-panel" aria-label="Host controls">
-          <section class="control-section">
-            <h2>Session</h2>
-            <div class="button-row">
-              <button id="connectButton" class="primary-button" type="button">Connect</button>
-              <button id="disconnectButton" class="secondary-button" type="button" disabled>Stop</button>
-            </div>
-          </section>
+        <section class="panel" aria-label="Coverage">
+          <div class="panel-head">
+            <h2>Coverage</h2>
+          </div>
 
-          <section class="control-section">
-            <h2>Host</h2>
-            <div class="button-grid">
-              <button id="activateButton" class="primary-button" type="button" disabled>Activate Melody</button>
-              <button id="pauseButton" class="secondary-button" type="button" disabled>Pause Melody</button>
-              <button id="newSessionButton" class="secondary-button" type="button">New Session</button>
+          <div class="status-stack" aria-live="polite">
+            <div class="status-card">
+              <span class="status-label">Connection</span>
+              <span id="connectionStatus" class="status-pill">Offline</span>
             </div>
-          </section>
-
-          <section class="control-section">
-            <h2>Agenda</h2>
-            <div id="agendaStatus" class="agenda-status" aria-live="polite">No agenda provided</div>
-            <label class="field-label" for="agendaInput">Document agenda</label>
-            <textarea
-              id="agendaInput"
-              class="text-area"
-              rows="6"
-              placeholder="Paste the meeting agenda here"
-            ></textarea>
-            <div class="button-grid">
-              <button id="saveAgendaButton" class="primary-button" type="button">Save Agenda</button>
-              <button id="captureAgendaButton" class="secondary-button" type="button" disabled>Capture Verbal Agenda</button>
-              <button id="clearAgendaButton" class="secondary-button" type="button">Clear Agenda</button>
+            <div class="status-card">
+              <span class="status-label">Juno Mode</span>
+              <span id="modeStatus" class="status-pill mode-observing">Observing</span>
             </div>
-          </section>
+          </div>
 
-          <section class="control-section">
-            <h2>Behavior</h2>
-            <label class="toggle">
-              <input id="autoConverseToggle" type="checkbox" checked>
-              <span>Auto converse after activation</span>
-            </label>
-            <div id="autoConverseStatus" class="auto-converse-status" aria-live="polite">
-              Auto converse is enabled. Melody may respond after each participant turn while active.
-            </div>
-            <label class="field-label" for="triggerInput">Trigger name</label>
-            <input id="triggerInput" class="text-input" type="text" value="Melody" autocomplete="off">
-          </section>
-
-          <section class="control-section">
-            <h2>Activity</h2>
-            <div id="eventLog" class="event-log" aria-live="polite"></div>
-          </section>
-        </aside>
+          <ul class="coverage-list">
+            <li>Opening and learner expectations</li>
+            <li>Active listening</li>
+            <li>Scenario practice</li>
+            <li>Session recap</li>
+          </ul>
+        </section>
       </section>
 
       <audio id="remoteAudio" autoplay></audio>

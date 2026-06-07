@@ -4,7 +4,7 @@ const state = {
   connecting: false,
   waitingForResponse: false,
   autoConverse: true,
-  triggerName: "Melody",
+  triggerName: "Juno",
   pc: null,
   dc: null,
   micStream: null,
@@ -84,13 +84,13 @@ function setControls() {
 function updateAutoConverseStatus() {
   if (state.autoConverse) {
     els.autoConverseStatus.textContent =
-      "Auto converse is enabled. Melody may respond after each participant turn while active.";
+      "Auto converse is enabled. Juno may respond after each participant turn while active.";
     els.autoConverseStatus.classList.remove("is-off");
     return;
   }
 
   els.autoConverseStatus.textContent =
-    "Auto converse is disabled. Melody responds only when directly addressed, invited, or asked an explicit question.";
+    "Auto converse is disabled. Juno responds only when directly addressed, invited, or asked an explicit question.";
   els.autoConverseStatus.classList.add("is-off");
 }
 
@@ -291,7 +291,7 @@ function triggerPattern() {
   return new RegExp(`\\b${escaped}\\b`, "i");
 }
 
-function wasMelodyCalled(text) {
+function wasJunoCalled(text) {
   return Boolean(text && state.triggerName.trim() && triggerPattern().test(text));
 }
 
@@ -303,7 +303,7 @@ function looksLikeInvitation(text) {
 
 function shouldConverse(text) {
   if (!state.autoConverse) {
-    return wasMelodyCalled(text) || looksLikeInvitation(text) || /\?\s*$/.test(text);
+    return wasJunoCalled(text) || looksLikeInvitation(text) || /\?\s*$/.test(text);
   }
   return Boolean(text && text.trim());
 }
@@ -360,7 +360,7 @@ function waitForAudioEnded(signal) {
     };
     const onError = () => {
       cleanup();
-      reject(new Error("Melody playback failed."));
+      reject(new Error("Juno playback failed."));
     };
     const onAbort = () => {
       cleanup();
@@ -490,7 +490,7 @@ async function playElevenLabsStream(response, signal) {
   }
 }
 
-function stopElevenLabsPlayback(reason = "Melody playback interrupted.") {
+function stopElevenLabsPlayback(reason = "Juno playback interrupted.") {
   if (!state.useElevenLabs) return;
 
   if (state.ttsAbortController) {
@@ -517,7 +517,7 @@ async function speakWithElevenLabs(text) {
   if (!spokenText) return;
 
   stopElevenLabsPlayback();
-  appendEvent("Synthesizing Melody audio.");
+  appendEvent("Synthesizing Juno audio.");
 
   const controller = new AbortController();
   state.ttsAbortController = controller;
@@ -565,14 +565,14 @@ async function speakWithElevenLabs(text) {
   }
 }
 
-function createMelodyResponse(reason, extraInstructions = "") {
+function createJunoResponse(reason, extraInstructions = "") {
   if (state.waitingForResponse) {
-    appendEvent("Melody is finishing the current response.");
+    appendEvent("Juno is finishing the current response.");
     return;
   }
 
   const responseInstructions = `
-You are Melody, the online meeting co-host.
+You are Juno, the online meeting co-host.
 Current app state: ${state.mode}.
 Reason for this turn: ${reason}.
 ${agendaInstructions()}
@@ -611,7 +611,7 @@ function clearPendingResponse(reason = "") {
   }
 }
 
-function scheduleMelodyResponse(reason, audienceText = "") {
+function scheduleJunoResponse(reason, audienceText = "") {
   const guestText = (audienceText || "").trim();
 
   if (!state.connected || state.mode !== "active") {
@@ -621,7 +621,7 @@ function scheduleMelodyResponse(reason, audienceText = "") {
   if (state.waitingForResponse) {
     state.queuedResponseReason = reason;
     state.queuedAudienceText = guestText;
-    appendEvent("Melody queued the next turn after the current response.");
+    appendEvent("Juno queued the next turn after the current response.");
     return;
   }
 
@@ -644,7 +644,7 @@ function scheduleMelodyResponse(reason, audienceText = "") {
       ? `Latest participant message: "${scheduledText}"\nAcknowledge this message directly and keep your reply anchored to it.`
       : "";
 
-    createMelodyResponse(scheduledReason, followUpInstructions);
+    createJunoResponse(scheduledReason, followUpInstructions);
   }, state.responseDelayMs);
 }
 
@@ -655,10 +655,10 @@ function flushQueuedResponse() {
   const queuedText = state.queuedAudienceText;
   state.queuedResponseReason = "";
   state.queuedAudienceText = "";
-  scheduleMelodyResponse(queuedReason, queuedText);
+  scheduleJunoResponse(queuedReason, queuedText);
 }
 
-function activateMelody(source, options = {}) {
+function activateJuno(source, options = {}) {
   if (!state.connected) return;
 
   const immediateWelcome = options.immediateWelcome !== false;
@@ -669,25 +669,25 @@ function activateMelody(source, options = {}) {
   state.queuedAudienceText = "";
 
   setMode("active");
-  appendEvent(`Melody activated by ${source}.`);
+  appendEvent(`Juno activated by ${source}.`);
 
   if (immediateWelcome) {
-    createMelodyResponse(
+    createJunoResponse(
       "activation",
       "The host or participant has invited you by name. Welcome everyone to the online meeting and offer a brief, natural opening."
     );
     return;
   }
 
-  scheduleMelodyResponse("direct address", audienceText);
+  scheduleJunoResponse("direct address", audienceText);
 }
 
-function pauseMelody() {
+function pauseJuno() {
   clearPendingResponse("Pending response canceled while paused.");
   state.queuedResponseReason = "";
   state.queuedAudienceText = "";
   setMode("paused");
-  appendEvent("Melody paused.");
+  appendEvent("Juno paused.");
 }
 
 function handleTranscript(text) {
@@ -698,8 +698,8 @@ function handleTranscript(text) {
     return;
   }
 
-  if (state.mode !== "active" && wasMelodyCalled(text)) {
-    activateMelody("voice trigger", {
+  if (state.mode !== "active" && wasJunoCalled(text)) {
+    activateJuno("voice trigger", {
       immediateWelcome: false,
       audienceText: text
     });
@@ -707,10 +707,10 @@ function handleTranscript(text) {
   }
 
   if (state.mode === "active" && shouldConverse(text)) {
-    const reason = wasMelodyCalled(text)
+    const reason = wasJunoCalled(text)
       ? "direct address"
       : "active co-host conversation";
-    scheduleMelodyResponse(reason, text);
+    scheduleJunoResponse(reason, text);
   }
 }
 
@@ -727,9 +727,6 @@ function handleServerEvent(event) {
     case "input_audio_buffer.speech_started":
       appendEvent("Speech started.");
       clearPendingResponse("Follow-up detected. Re-evaluating before responding.");
-      if (state.useElevenLabs && (state.ttsPlaying || state.ttsAbortController)) {
-        stopElevenLabsPlayback("User speech detected. Melody interrupted.");
-      }
       break;
 
     case "input_audio_buffer.speech_stopped":
@@ -737,12 +734,19 @@ function handleServerEvent(event) {
       break;
 
     case "conversation.item.input_audio_transcription.completed":
+      if (
+        state.useElevenLabs &&
+        (state.ttsPlaying || state.ttsAbortController) &&
+        wasJunoCalled(event.transcript || "")
+      ) {
+        stopElevenLabsPlayback("Direct interruption detected. Juno yields the floor.");
+      }
       handleTranscript(event.transcript || "");
       break;
 
     case "response.created":
       state.waitingForResponse = true;
-      appendEvent("Melody is speaking.");
+      appendEvent("Juno is speaking.");
       break;
 
     case "response.output_text.delta":
@@ -764,16 +768,16 @@ function handleServerEvent(event) {
       break;
 
     case "response.output_audio_transcript.done":
-      appendTurn("Melody", event.transcript || state.assistantTranscript);
+      appendTurn("Juno", event.transcript || state.assistantTranscript);
       state.assistantTranscript = "";
       break;
 
     case "response.done": {
-      const melodyText = state.assistantTranscript.trim();
+      const junoText = state.assistantTranscript.trim();
       state.assistantTranscript = "";
-      if (state.useElevenLabs && melodyText) {
-        appendTurn("Melody", melodyText);
-        void speakWithElevenLabs(melodyText);
+      if (state.useElevenLabs && junoText) {
+        appendTurn("Juno", junoText);
+        void speakWithElevenLabs(junoText);
       } else {
         state.waitingForResponse = false;
         flushQueuedResponse();
@@ -785,7 +789,7 @@ function handleServerEvent(event) {
       state.waitingForResponse = false;
       state.assistantTranscript = "";
       if (state.useElevenLabs) {
-        stopElevenLabsPlayback("Melody response canceled.");
+        stopElevenLabsPlayback("Juno response canceled.");
       }
       flushQueuedResponse();
       break;
@@ -922,7 +926,7 @@ async function connect() {
     state.connecting = false;
     setMode("observing");
     setControls();
-    appendEvent("Melody is observing.");
+    appendEvent("Juno is observing.");
   } catch (error) {
     appendEvent(error.message || "Connection failed.");
     disconnect();
@@ -974,9 +978,9 @@ async function newSession() {
 els.connectButton.addEventListener("click", connect);
 els.disconnectButton.addEventListener("click", disconnect);
 els.activateButton.addEventListener("click", () =>
-  activateMelody("host button", { immediateWelcome: true })
+  activateJuno("host button", { immediateWelcome: true })
 );
-els.pauseButton.addEventListener("click", pauseMelody);
+els.pauseButton.addEventListener("click", pauseJuno);
 els.newSessionButton.addEventListener("click", newSession);
 els.clearLogButton.addEventListener("click", () => els.transcriptLog.replaceChildren());
 els.saveAgendaButton.addEventListener("click", saveDocumentAgenda);
@@ -990,7 +994,7 @@ els.autoConverseToggle.addEventListener("change", () => {
   );
 });
 els.triggerInput.addEventListener("input", () => {
-  state.triggerName = els.triggerInput.value || "Melody";
+  state.triggerName = els.triggerInput.value || "Juno";
 });
 
 setMode("observing");

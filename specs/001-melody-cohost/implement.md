@@ -1,4 +1,4 @@
-# Implementation Notes: Melody Online Meeting Co-Host Voice Agent
+# Implementation Notes: Juno Online Meeting Co-Host Voice Agent
 
 **Feature Directory**: `specs/001-melody-cohost`
 **Status**: Current implementation supports online-meeting wording, document agenda text, verbal agenda capture, agenda status, agenda-aware response instructions, and paced participant turn handling.
@@ -8,10 +8,10 @@
 - `server.mjs` serves static files, loads `.env`, exposes `/health`, and creates Realtime calls through `/session`.
 - `server.mjs` keeps `OPENAI_API_KEY` server-side.
 - `server.mjs` configures Realtime input transcription and disables automatic response creation.
-- `server.mjs` scopes Melody to online meetings and instructs her not to invent agenda details.
+- `server.mjs` scopes Juno to online meetings and instructs her not to invent agenda details.
 - `public/index.html` exposes session, host, agenda, behavior, transcript, and activity controls.
 - `public/app.js` handles microphone access, WebRTC peer connection, data-channel events, activation logic, trigger matching, agenda state, document agenda saving, verbal agenda capture, transcript entries, event logs, agenda-aware response instructions, and cleanup.
-- `public/app.js` applies a 3-second response hold after participant turns, cancels pending replies on follow-up speech, and queues next-turn responses when Melody is already responding.
+- `public/app.js` applies a 3-second response hold after participant turns, cancels pending replies on follow-up speech, and queues next-turn responses when Juno is already responding.
 - `public/app.js` enforces scope boundaries to event context, event title (when present), and current audience topic, with brief redirect behavior for off-topic asks.
 - `public/styles.css` provides the local console layout, agenda controls, and visual states.
 - `run-app.bat` provides a Windows-friendly local launcher.
@@ -24,14 +24,14 @@
 ## Implementation Rules
 
 - Do not expose `OPENAI_API_KEY` in client code or logs.
-- Do not let Melody speak automatically from Realtime VAD alone.
+- Do not let Juno speak automatically from Realtime VAD alone.
 - Keep `response.create` controlled by host activation, trigger detection, or active-mode conversation rules.
-- Keep Melody scoped to online meetings only.
+- Keep Juno scoped to online meetings only.
 - Use only host-provided or participant-provided agenda information; ask for clarification when agenda details are missing.
-- Keep Melody responses concise and aligned with the prompt safety requirements.
+- Keep Juno responses concise and aligned with the prompt safety requirements.
 - Wait briefly after participant turns to allow natural continuation and avoid rushed interruptions.
-- Keep Melody anchored to current meeting context and ask a concise probing clarification question when participant intent is unclear.
-- Keep Melody constrained to event context, event title, and the current audience topic; redirect off-topic personal/social asks back to the event discussion.
+- Keep Juno anchored to current meeting context and ask a concise probing clarification question when participant intent is unclear.
+- Keep Juno constrained to event context, event title, and the current audience topic; redirect off-topic personal/social asks back to the event discussion.
 - Keep desktop runtime behavior aligned with browser runtime behavior and local environment handling.
 - Keep desktop and web/AWS targets aligned for user-visible behavior unless a requirement explicitly scopes to one target.
 - Preserve microphone cleanup on stop/reset.
@@ -59,19 +59,19 @@ http://localhost:8787
 - [ ] App loads at `http://localhost:8787`.
 - [ ] `/health` returns readiness metadata and does not reveal the API key.
 - [ ] **Connect** asks for microphone access and reaches observing mode.
-- [ ] Melody remains silent before activation.
+- [ ] Juno remains silent before activation.
 - [ ] Host can provide agenda content through the document path.
 - [ ] Host can provide agenda content verbally.
 - [ ] Agenda status updates after document and verbal agenda input.
-- [ ] Melody uses supplied agenda context in an activated response.
-- [ ] Melody asks for agenda clarification or stays general when no agenda has been supplied.
-- [ ] **Activate Melody** requests one welcome response.
-- [ ] Saying the configured trigger name activates Melody from observing mode.
-- [ ] **Pause Melody** stops active auto-conversation behavior.
+- [ ] Juno uses supplied agenda context in an activated response.
+- [ ] Juno asks for agenda clarification or stays general when no agenda has been supplied.
+- [ ] **Activate Juno** requests one welcome response.
+- [ ] Saying the configured trigger name activates Juno from observing mode.
+- [ ] **Pause Juno** stops active auto-conversation behavior.
 - [ ] Active mode waits about 3 seconds after each participant turn before responding.
 - [ ] Follow-up participant speech during the wait window defers the pending response and uses the latest turn.
-- [ ] Melody stays on current meeting context and asks a concise clarifying probe when participant meaning is unclear.
-- [ ] Melody stays within event context, event title, and current audience topic, and redirects off-topic personal/social asks.
+- [ ] Juno stays on current meeting context and asks a concise clarifying probe when participant meaning is unclear.
+- [ ] Juno stays within event context, event title, and current audience topic, and redirects off-topic personal/social asks.
 - [ ] Desktop app launches successfully with `npm.cmd run desktop:start`.
 - [ ] Windows portable package is generated with `npm.cmd run desktop:pack:win`.
 - [ ] Web runtime launches with `npm.cmd run web:start`.

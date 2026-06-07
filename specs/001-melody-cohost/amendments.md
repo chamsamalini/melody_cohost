@@ -44,4 +44,39 @@ Use this file to capture user-requested amendments and track where they were app
 - Date: 2026-06-07
 - Request: Fix desktop startup crash when port `8787` is already in use.
 - Impacted Artifacts: desktop/main.cjs, specs/001-melody-cohost/implement.md, specs/001-melody-cohost/amendments.md
-- Notes: Desktop runtime now reuses an already-running local Melody server on the same port instead of throwing EADDRINUSE.
+- Notes: Desktop runtime now reuses an already-running local Juno server on the same port instead of throwing EADDRINUSE.
+
+- Date: 2026-06-07
+- Request: Rename app branding from Melody to Juno and use provided Juno logo.
+- Impacted Artifacts: public/assets/juno-logo-wordmark.svg, public/index.html, public/styles.css, public/app.js, server.mjs, desktop/main.cjs, package.json, package-lock.json, README.md, run-app.bat, tests/ui/host-console.spec.js, specs/001-melody-cohost/*.md
+- Notes: Updated runtime/UI branding, default trigger name, desktop/app package names, and documentation references to Juno.
+
+- Date: 2026-06-07
+- Request: Update the application background to suit the Juno logo branding.
+- Impacted Artifacts: public/styles.css, specs/001-melody-cohost/amendments.md
+- Notes: Shifted background palette and radial gradient layers toward a deeper purple identity aligned with the Juno mark.
+
+- Date: 2026-06-07
+- Request: Make the logo portion match the provided card-style reference and use the provided purple gradient direction for the background.
+- Impacted Artifacts: public/index.html, public/styles.css, specs/001-melody-cohost/amendments.md
+- Notes: Replaced plain logo block with framed logo card and adjusted page background to a cleaner deep-violet gradient with top accent strip.
+
+- Date: 2026-06-07
+- Request: Add tagline text under the Juno logo: "your meeting cohost".
+- Impacted Artifacts: public/index.html, specs/001-melody-cohost/amendments.md
+- Notes: Added tagline under the logo card while preserving the current layout style.
+
+- Date: 2026-06-07
+- Request: Center the tagline and use a more suitable font style.
+- Impacted Artifacts: public/styles.css, specs/001-melody-cohost/amendments.md
+- Notes: Centered the tagline block and switched tagline styling to a Sora-based uppercase treatment for better brand fit.
+
+- Date: 2026-06-07
+- Request: Replace existing wireframe with a cleaner reference-aligned layout and visual style.
+- Impacted Artifacts: public/index.html, public/styles.css, specs/001-melody-cohost/amendments.md
+- Notes: Reworked page structure into a 4-panel dashboard layout and updated styling to a bold futuristic purple UI language while preserving existing control IDs and behaviors.
+
+- Date: 2026-06-07
+- Request: Do not let Juno stop speaking on incidental speech; only treat direct name-calls as interruptions.
+- Impacted Artifacts: public/app.js, specs/001-melody-cohost/amendments.md
+- Notes: Removed speech-start auto-interrupt behavior and now interrupt ElevenLabs playback only after completed transcription explicitly calls Juno.

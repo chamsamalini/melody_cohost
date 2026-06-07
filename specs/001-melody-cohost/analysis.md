@@ -1,4 +1,4 @@
-# Cross-Artifact Analysis: Melody Online Meeting Co-Host Voice Agent
+# Cross-Artifact Analysis: Juno Online Meeting Co-Host Voice Agent
 
 **Feature Directory**: `specs/001-melody-cohost`
 **Analyzed**: 2026-06-06
@@ -15,7 +15,7 @@
 
 ## Summary
 
-The specification, plan, constitution, and implementation now scope Melody to online meetings only and support meeting agenda context through pasted document content or verbal agenda capture from transcript turns. Agenda context is session-local, visible to the host, and included in Melody response requests when available.
+The specification, plan, constitution, and implementation now scope Juno to online meetings only and support meeting agenda context through pasted document content or verbal agenda capture from transcript turns. Agenda context is session-local, visible to the host, and included in Juno response requests when available.
 
 ## Consistency Checks
 
