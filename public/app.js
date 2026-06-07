@@ -24,7 +24,8 @@ const state = {
   useElevenLabs: false,
   ttsPlaying: false,
   ttsAbortController: null,
-  ttsAudioUrl: ""
+  ttsAudioUrl: "",
+  theme: "violet"
 };
 
 const els = {
@@ -43,6 +44,7 @@ const els = {
   autoConverseToggle: document.querySelector("#autoConverseToggle"),
   autoConverseStatus: document.querySelector("#autoConverseStatus"),
   triggerInput: document.querySelector("#triggerInput"),
+  themeSelect: document.querySelector("#themeSelect"),
   agendaStatus: document.querySelector("#agendaStatus"),
   agendaInput: document.querySelector("#agendaInput"),
   saveAgendaButton: document.querySelector("#saveAgendaButton"),
@@ -51,6 +53,8 @@ const els = {
 };
 
 const maxAgendaCharacters = 4000;
+const themeStorageKey = "junoTheme";
+const availableThemes = new Set(["violet", "fdm", "midnight", "sunset", "emerald"]);
 
 const meterBars = Array.from({ length: 32 }, () => {
   const bar = document.createElement("span");
@@ -131,6 +135,39 @@ function appendEvent(text) {
   while (els.eventLog.children.length > 40) {
     els.eventLog.firstElementChild.remove();
   }
+}
+
+function applyTheme(themeName, { persist = false, announce = false } = {}) {
+  const candidate = (themeName || "").trim().toLowerCase();
+  const nextTheme = availableThemes.has(candidate) ? candidate : "violet";
+  state.theme = nextTheme;
+  document.body.dataset.theme = nextTheme;
+
+  if (els.themeSelect && els.themeSelect.value !== nextTheme) {
+    els.themeSelect.value = nextTheme;
+  }
+
+  if (persist) {
+    try {
+      localStorage.setItem(themeStorageKey, nextTheme);
+    } catch {
+      // Ignore storage failures and continue with in-memory theme.
+    }
+  }
+
+  if (announce) {
+    appendEvent(`Theme changed to ${nextTheme}.`);
+  }
+}
+
+function initTheme() {
+  let storedTheme = "violet";
+  try {
+    storedTheme = localStorage.getItem(themeStorageKey) || "violet";
+  } catch {
+    storedTheme = "violet";
+  }
+  applyTheme(storedTheme);
 }
 
 function normalizeAgendaText(text) {
@@ -996,7 +1033,11 @@ els.autoConverseToggle.addEventListener("change", () => {
 els.triggerInput.addEventListener("input", () => {
   state.triggerName = els.triggerInput.value || "Juno";
 });
+els.themeSelect.addEventListener("change", () => {
+  applyTheme(els.themeSelect.value, { persist: true, announce: true });
+});
 
+initTheme();
 setMode("observing");
 setControls();
 updateAgendaStatus();

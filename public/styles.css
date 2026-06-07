@@ -3,16 +3,146 @@
   --bg-a: #140136;
   --bg-b: #260a5f;
   --bg-c: #3a1388;
+  --bg-spot-a: rgba(194, 162, 255, 0.2);
+  --bg-spot-b: rgba(150, 96, 247, 0.22);
+  --top-strip-a: #a875ff;
+  --top-strip-b: #7f48ef;
+  --top-strip-c: #9c6cff;
   --panel: rgba(152, 95, 242, 0.34);
   --panel-border: rgba(214, 184, 255, 0.26);
+  --panel-grad-a: rgba(106, 65, 179, 0.6);
+  --panel-grad-b: rgba(154, 101, 246, 0.36);
   --ink: #f6f1ff;
   --muted: rgba(238, 228, 255, 0.76);
   --line: rgba(224, 201, 255, 0.2);
   --brand: #ffffff;
   --brand-soft: rgba(255, 255, 255, 0.12);
+  --logo-border: rgba(154, 122, 230, 0.44);
+  --logo-grad-a: rgba(20, 2, 59, 0.96);
+  --logo-grad-b: rgba(42, 10, 97, 0.94);
+  --chip-border: rgba(203, 174, 255, 0.36);
+  --chip-bg: rgba(114, 74, 186, 0.32);
+  --chip-text: rgba(245, 236, 255, 0.9);
+  --meter-grad-a: rgba(93, 55, 170, 0.55);
+  --meter-grad-b: rgba(137, 84, 223, 0.46);
+  --meter-bar-a: #c18dff;
+  --meter-bar-b: #7d46eb;
+  --meter-bar-c: #5928ba;
+  --primary-grad-a: #ffffff;
+  --primary-grad-b: #f0e8ff;
+  --primary-text: #4b2ca4;
   --success: #62e59a;
   --warning: #f4cf6c;
   --shadow-lg: 0 22px 48px rgba(7, 1, 26, 0.34);
+}
+
+body[data-theme="midnight"] {
+  --bg-a: #070f25;
+  --bg-b: #132145;
+  --bg-c: #1e3271;
+  --bg-spot-a: rgba(121, 188, 255, 0.2);
+  --bg-spot-b: rgba(78, 134, 244, 0.24);
+  --top-strip-a: #88d2ff;
+  --top-strip-b: #4d86ff;
+  --top-strip-c: #79b4ff;
+  --panel-border: rgba(171, 214, 255, 0.28);
+  --panel-grad-a: rgba(44, 88, 164, 0.58);
+  --panel-grad-b: rgba(93, 156, 246, 0.34);
+  --logo-border: rgba(133, 182, 255, 0.42);
+  --logo-grad-a: rgba(9, 28, 73, 0.96);
+  --logo-grad-b: rgba(18, 52, 112, 0.94);
+  --chip-border: rgba(171, 214, 255, 0.34);
+  --chip-bg: rgba(43, 93, 184, 0.34);
+  --meter-grad-a: rgba(33, 84, 171, 0.54);
+  --meter-grad-b: rgba(66, 130, 240, 0.44);
+  --meter-bar-a: #a8d8ff;
+  --meter-bar-b: #5fa7ff;
+  --meter-bar-c: #2c66cf;
+  --primary-grad-a: #f7fcff;
+  --primary-grad-b: #dfeeff;
+  --primary-text: #214b9d;
+}
+
+body[data-theme="fdm"] {
+  --bg-a: #050806;
+  --bg-b: #0a120c;
+  --bg-c: #0f1f13;
+  --bg-spot-a: rgba(107, 255, 58, 0.13);
+  --bg-spot-b: rgba(122, 255, 0, 0.18);
+  --top-strip-a: #75ff2c;
+  --top-strip-b: #b6ff3b;
+  --top-strip-c: #49ff1d;
+  --panel-border: rgba(128, 255, 61, 0.3);
+  --panel-grad-a: rgba(14, 28, 16, 0.82);
+  --panel-grad-b: rgba(24, 54, 28, 0.7);
+  --logo-border: rgba(124, 255, 43, 0.45);
+  --logo-grad-a: rgba(8, 17, 9, 0.96);
+  --logo-grad-b: rgba(19, 43, 22, 0.92);
+  --chip-border: rgba(124, 255, 43, 0.4);
+  --chip-bg: rgba(50, 95, 39, 0.42);
+  --chip-text: rgba(235, 255, 226, 0.95);
+  --meter-grad-a: rgba(29, 74, 31, 0.64);
+  --meter-grad-b: rgba(54, 129, 45, 0.56);
+  --meter-bar-a: #cdff79;
+  --meter-bar-b: #89ff32;
+  --meter-bar-c: #3dbf14;
+  --primary-grad-a: #d9ffac;
+  --primary-grad-b: #9dff55;
+  --primary-text: #103b0b;
+}
+
+body[data-theme="sunset"] {
+  --bg-a: #2e0b1f;
+  --bg-b: #5b1e2c;
+  --bg-c: #9a3a33;
+  --bg-spot-a: rgba(255, 196, 144, 0.23);
+  --bg-spot-b: rgba(255, 126, 107, 0.26);
+  --top-strip-a: #ffce73;
+  --top-strip-b: #ff8f57;
+  --top-strip-c: #ff6464;
+  --panel-border: rgba(255, 199, 165, 0.3);
+  --panel-grad-a: rgba(145, 61, 62, 0.58);
+  --panel-grad-b: rgba(234, 120, 97, 0.34);
+  --logo-border: rgba(255, 194, 140, 0.44);
+  --logo-grad-a: rgba(87, 24, 39, 0.95);
+  --logo-grad-b: rgba(145, 45, 62, 0.93);
+  --chip-border: rgba(255, 202, 163, 0.38);
+  --chip-bg: rgba(190, 83, 80, 0.38);
+  --meter-grad-a: rgba(153, 65, 66, 0.55);
+  --meter-grad-b: rgba(223, 113, 95, 0.47);
+  --meter-bar-a: #ffd39d;
+  --meter-bar-b: #ff9268;
+  --meter-bar-c: #ce4f4a;
+  --primary-grad-a: #fff9f3;
+  --primary-grad-b: #ffe8d2;
+  --primary-text: #944034;
+}
+
+body[data-theme="emerald"] {
+  --bg-a: #06251f;
+  --bg-b: #0f4b3e;
+  --bg-c: #1b7a68;
+  --bg-spot-a: rgba(131, 255, 219, 0.2);
+  --bg-spot-b: rgba(84, 220, 171, 0.23);
+  --top-strip-a: #89ffd8;
+  --top-strip-b: #52d8b0;
+  --top-strip-c: #7ceaca;
+  --panel-border: rgba(153, 241, 212, 0.3);
+  --panel-grad-a: rgba(29, 118, 95, 0.58);
+  --panel-grad-b: rgba(81, 178, 147, 0.35);
+  --logo-border: rgba(146, 239, 206, 0.43);
+  --logo-grad-a: rgba(11, 68, 57, 0.95);
+  --logo-grad-b: rgba(21, 103, 86, 0.93);
+  --chip-border: rgba(155, 243, 213, 0.34);
+  --chip-bg: rgba(36, 129, 106, 0.35);
+  --meter-grad-a: rgba(26, 122, 99, 0.52);
+  --meter-grad-b: rgba(67, 174, 145, 0.43);
+  --meter-bar-a: #a7f9de;
+  --meter-bar-b: #57d5ae;
+  --meter-bar-c: #299975;
+  --primary-grad-a: #f5fffb;
+  --primary-grad-b: #dcf8ee;
+  --primary-text: #1f765e;
 }
 
 * {
@@ -29,8 +159,8 @@ body {
   color: var(--ink);
   font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   background:
-    radial-gradient(circle at 84% 26%, rgba(194, 162, 255, 0.2), transparent 34%),
-    radial-gradient(circle at 6% 88%, rgba(150, 96, 247, 0.22), transparent 38%),
+    radial-gradient(circle at 84% 26%, var(--bg-spot-a), transparent 34%),
+    radial-gradient(circle at 6% 88%, var(--bg-spot-b), transparent 38%),
     linear-gradient(180deg, var(--bg-a) 0%, var(--bg-b) 58%, var(--bg-c) 100%);
   position: relative;
 }
@@ -40,7 +170,12 @@ body::before {
   position: fixed;
   inset: 0 0 auto;
   height: 8px;
-  background: linear-gradient(90deg, #a875ff 0%, #7f48ef 45%, #9c6cff 100%);
+  background: linear-gradient(
+    90deg,
+    var(--top-strip-a) 0%,
+    var(--top-strip-b) 45%,
+    var(--top-strip-c) 100%
+  );
   opacity: 0.9;
   z-index: 10;
   pointer-events: none;
@@ -92,8 +227,8 @@ button:disabled {
   min-height: 112px;
   padding: 16px 20px;
   border-radius: 24px;
-  border: 1px solid rgba(154, 122, 230, 0.44);
-  background: linear-gradient(140deg, rgba(20, 2, 59, 0.96) 0%, rgba(42, 10, 97, 0.94) 100%);
+  border: 1px solid var(--logo-border);
+  background: linear-gradient(140deg, var(--logo-grad-a) 0%, var(--logo-grad-b) 100%);
   box-shadow: 0 18px 30px rgba(8, 1, 30, 0.44), inset 0 1px 0 rgba(207, 182, 255, 0.16);
 }
 
@@ -153,10 +288,10 @@ h2 {
 }
 
 .chip {
-  border: 1px solid rgba(203, 174, 255, 0.36);
+  border: 1px solid var(--chip-border);
   border-radius: 999px;
-  background: rgba(114, 74, 186, 0.32);
-  color: rgba(245, 236, 255, 0.9);
+  background: var(--chip-bg);
+  color: var(--chip-text);
   font-size: 0.76rem;
   font-weight: 700;
   padding: 8px 12px;
@@ -228,7 +363,7 @@ h2 {
   min-height: 640px;
   border-radius: 22px;
   border: 1px solid var(--panel-border);
-  background: linear-gradient(180deg, rgba(106, 65, 179, 0.6) 0%, rgba(154, 101, 246, 0.36) 100%);
+  background: linear-gradient(180deg, var(--panel-grad-a) 0%, var(--panel-grad-b) 100%);
   box-shadow: var(--shadow-lg);
   backdrop-filter: blur(8px);
   padding: 16px;
@@ -240,7 +375,7 @@ h2 {
   min-height: 90px;
   border-radius: 14px;
   background:
-    linear-gradient(130deg, rgba(93, 55, 170, 0.55), rgba(137, 84, 223, 0.46));
+    linear-gradient(130deg, var(--meter-grad-a), var(--meter-grad-b));
   border: 1px solid rgba(219, 195, 255, 0.23);
   overflow: hidden;
 }
@@ -259,7 +394,12 @@ h2 {
   height: 8%;
   min-height: 9px;
   border-radius: 999px 999px 0 0;
-  background: linear-gradient(180deg, #c18dff 0%, #7d46eb 62%, #5928ba 100%);
+  background: linear-gradient(
+    180deg,
+    var(--meter-bar-a) 0%,
+    var(--meter-bar-b) 62%,
+    var(--meter-bar-c) 100%
+  );
   opacity: 0.76;
   transform-origin: bottom;
   transition: height 95ms ease;
@@ -372,8 +512,8 @@ h2 {
 }
 
 .primary-button {
-  color: #4b2ca4;
-  background: linear-gradient(180deg, #ffffff 0%, #f0e8ff 100%);
+  color: var(--primary-text);
+  background: linear-gradient(180deg, var(--primary-grad-a) 0%, var(--primary-grad-b) 100%);
   box-shadow: 0 10px 16px rgba(34, 10, 79, 0.22);
 }
 

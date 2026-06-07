@@ -80,3 +80,18 @@ Use this file to capture user-requested amendments and track where they were app
 - Request: Do not let Juno stop speaking on incidental speech; only treat direct name-calls as interruptions.
 - Impacted Artifacts: public/app.js, specs/001-melody-cohost/amendments.md
 - Notes: Removed speech-start auto-interrupt behavior and now interrupt ElevenLabs playback only after completed transcription explicitly calls Juno.
+
+- Date: 2026-06-07
+- Request: Provide selectable app color themes.
+- Impacted Artifacts: public/index.html, public/app.js, public/styles.css, specs/001-melody-cohost/amendments.md
+- Notes: Added theme selector, multiple palette variants, and localStorage persistence for selected theme.
+
+- Date: 2026-06-07
+- Request: Add one theme inspired by the FDM Group website style.
+- Impacted Artifacts: public/index.html, public/app.js, public/styles.css, specs/001-melody-cohost/amendments.md
+- Notes: Added an FDM Corporate theme option using a deep navy and cyan-accent palette aligned to the target website's corporate visual direction.
+
+- Date: 2026-06-07
+- Request: Adjust the FDM theme to use black and fluorescent green.
+- Impacted Artifacts: public/index.html, public/styles.css, specs/001-melody-cohost/amendments.md
+- Notes: Replaced FDM palette with a black/neon-green visual system and updated the selector label to FDM Black Neon.
