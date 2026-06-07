@@ -1,6 +1,7 @@
 const { app, BrowserWindow, dialog, session } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
+const { pathToFileURL } = require("node:url");
 
 const defaultPort = Number(process.env.PORT || 8787);
 let mainWindow = null;
@@ -45,7 +46,7 @@ async function startServer() {
   loadDesktopEnv();
 
   const serverPath = path.join(__dirname, "..", "server.mjs");
-  await import(serverPath);
+  await import(pathToFileURL(serverPath).href);
   serverLoaded = true;
 }
 
