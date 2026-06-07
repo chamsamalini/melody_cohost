@@ -16,6 +16,7 @@
 - `public/styles.css` provides the local console layout, agenda controls, and visual states.
 - `run-app.bat` provides a Windows-friendly local launcher.
 - `desktop/main.cjs` provides an Electron desktop wrapper that starts the local server and loads the host console in a desktop window.
+- `desktop/main.cjs` now tolerates an already-running local server on the same port and reuses it instead of failing desktop startup.
 - `Dockerfile` and `aws/apprunner.yaml` provide web deployment paths for AWS runtime targets.
 - `aws/apprunner-production-checklist.md` provides production release checks for web deployment hardening.
 - `public/index.html`, `public/app.js`, and `public/styles.css` include an explicit auto-converse status callout so hosts can see when active-mode conversational automation is on or off.

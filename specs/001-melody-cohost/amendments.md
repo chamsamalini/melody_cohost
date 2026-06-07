@@ -40,3 +40,8 @@ Use this file to capture user-requested amendments and track where they were app
 - Request: Add a production-ready App Runner deployment checklist with exact settings guidance.
 - Impacted Artifacts: aws/apprunner-production-checklist.md, aws/README.md, specs/001-melody-cohost/implement.md, specs/001-melody-cohost/amendments.md
 - Notes: Added operational checklist covering service creation, secrets, health checks, scaling, monitoring, and dual-target parity validation.
+
+- Date: 2026-06-07
+- Request: Fix desktop startup crash when port `8787` is already in use.
+- Impacted Artifacts: desktop/main.cjs, specs/001-melody-cohost/implement.md, specs/001-melody-cohost/amendments.md
+- Notes: Desktop runtime now reuses an already-running local Melody server on the same port instead of throwing EADDRINUSE.

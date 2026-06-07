@@ -46,7 +46,16 @@ async function startServer() {
   loadDesktopEnv();
 
   const serverPath = path.join(__dirname, "..", "server.mjs");
-  await import(pathToFileURL(serverPath).href);
+  try {
+    await import(pathToFileURL(serverPath).href);
+  } catch (error) {
+    // If another local process is already serving Melody on this port,
+    // reuse it instead of failing desktop startup.
+    const message = error?.message || "";
+    if (!message.includes("EADDRINUSE")) {
+      throw error;
+    }
+  }
   serverLoaded = true;
 }
 
