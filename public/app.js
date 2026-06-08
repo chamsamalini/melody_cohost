@@ -8,17 +8,25 @@ const state = {
   pc: null,
   dc: null,
   micStream: null,
+  systemStream: null,
+  uplinkStream: null,
+  mixContext: null,
   audioContext: null,
   analyser: null,
   meterAnimation: null,
   agendaText: "",
   agendaSource: "none",
+  agendaUploadText: "",
+  agendaUploadName: "",
+  agendaNotesText: "",
+  observationContextText: "",
   capturingAgenda: false,
   assistantTranscript: "",
   responseDelayMs: 3000,
   pendingResponseTimer: null,
   pendingResponseReason: "",
   pendingAudienceText: "",
+  lastGuestTurn: "",
   queuedResponseReason: "",
   queuedAudienceText: "",
   useElevenLabs: false,
@@ -35,6 +43,7 @@ const els = {
   eventLog: document.querySelector("#eventLog"),
   meter: document.querySelector("#meter"),
   remoteAudio: document.querySelector("#remoteAudio"),
+  responseSummary: document.querySelector("#responseSummary"),
   connectButton: document.querySelector("#connectButton"),
   disconnectButton: document.querySelector("#disconnectButton"),
   activateButton: document.querySelector("#activateButton"),
@@ -45,6 +54,8 @@ const els = {
   autoConverseStatus: document.querySelector("#autoConverseStatus"),
   triggerInput: document.querySelector("#triggerInput"),
   themeSelect: document.querySelector("#themeSelect"),
+  agendaFileInput: document.querySelector("#agendaFileInput"),
+  agendaUploadStatus: document.querySelector("#agendaUploadStatus"),
   agendaStatus: document.querySelector("#agendaStatus"),
   agendaInput: document.querySelector("#agendaInput"),
   saveAgendaButton: document.querySelector("#saveAgendaButton"),
@@ -137,6 +148,11 @@ function appendEvent(text) {
   }
 }
 
+function setResponseSummary(text) {
+  const summaryText = (text || "").trim();
+  els.responseSummary.textContent = summaryText || "No response summary yet.";
+}
+
 function applyTheme(themeName, { persist = false, announce = false } = {}) {
   const candidate = (themeName || "").trim().toLowerCase();
   const nextTheme = availableThemes.has(candidate) ? candidate : "violet";
@@ -174,6 +190,12 @@ function normalizeAgendaText(text) {
   return (text || "").replace(/\s+/g, " ").trim();
 }
 
+function normalizeAgendaBlock(label, text) {
+  const normalized = normalizeAgendaText(text);
+  if (!normalized) return "";
+  return `${label}:\n${normalized}`;
+}
+
 function agendaSummary(text) {
   const normalized = normalizeAgendaText(text);
   if (!normalized) return "";
@@ -184,8 +206,12 @@ function agendaSummary(text) {
 
 function agendaSourceLabel() {
   switch (state.agendaSource) {
-    case "document":
-      return "Document agenda saved";
+    case "uploaded":
+      return "Uploaded agenda saved";
+    case "written":
+      return "Written context saved";
+    case "observation":
+      return "Observation-derived context";
     case "verbal":
       return state.capturingAgenda
         ? "Capturing verbal agenda"
@@ -195,6 +221,51 @@ function agendaSourceLabel() {
     default:
       return "No agenda provided";
   }
+}
+
+function updateAgendaUploadStatus() {
+  els.agendaUploadStatus.textContent = state.agendaUploadName
+    ? `Uploaded file: ${state.agendaUploadName}`
+    : "No agenda uploaded";
+}
+
+function rebuildAgendaContext({ announce = false } = {}) {
+  const uploadedAgenda = normalizeAgendaText(state.agendaUploadText);
+  const writtenDetails = normalizeAgendaText(state.agendaNotesText);
+  const observedContext = normalizeAgendaText(state.observationContextText);
+
+  const segments = [];
+  if (uploadedAgenda) {
+    segments.push(normalizeAgendaBlock("Uploaded agenda", uploadedAgenda));
+  }
+  if (writtenDetails) {
+    segments.push(normalizeAgendaBlock("Written context details", writtenDetails));
+  }
+  if (!uploadedAgenda && observedContext) {
+    segments.push(normalizeAgendaBlock("Observation context", observedContext));
+  }
+
+  const nextText = agendaSummary(segments.filter(Boolean).join("\n\n"));
+  const previousText = state.agendaText;
+  state.agendaText = nextText;
+
+  if (!nextText) {
+    state.agendaSource = "none";
+  } else if (uploadedAgenda) {
+    state.agendaSource = "uploaded";
+  } else if (observedContext) {
+    state.agendaSource = writtenDetails ? "updated" : "observation";
+  } else {
+    state.agendaSource = "written";
+  }
+
+  updateAgendaStatus();
+
+  if (announce && nextText && nextText !== previousText) {
+    appendEvent(`${agendaSourceLabel()}.`);
+  }
+
+  return Boolean(nextText);
 }
 
 function updateAgendaStatus() {
@@ -215,6 +286,18 @@ function setAgenda(text, source) {
     return false;
   }
 
+  if (source === "uploaded") {
+    state.agendaUploadText = summary;
+    updateAgendaUploadStatus();
+    return rebuildAgendaContext({ announce: true });
+  }
+
+  if (source === "written") {
+    state.agendaNotesText = summary;
+    els.agendaInput.value = summary;
+    return rebuildAgendaContext({ announce: true });
+  }
+
   const existingAgenda = Boolean(state.agendaText);
   state.agendaText = summary;
   state.agendaSource = existingAgenda && source !== state.agendaSource ? "updated" : source;
@@ -224,16 +307,59 @@ function setAgenda(text, source) {
 }
 
 function saveDocumentAgenda() {
-  if (setAgenda(els.agendaInput.value, "document")) {
+  state.agendaNotesText = els.agendaInput.value;
+  if (rebuildAgendaContext({ announce: true })) {
     state.capturingAgenda = false;
     updateAgendaStatus();
   }
 }
 
+function clearAgendaUpload() {
+  state.agendaUploadText = "";
+  state.agendaUploadName = "";
+  if (els.agendaFileInput) {
+    els.agendaFileInput.value = "";
+  }
+  updateAgendaUploadStatus();
+  rebuildAgendaContext();
+}
+
+function handleAgendaFileUpload(file) {
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    const content = typeof reader.result === "string" ? reader.result : "";
+    const summary = agendaSummary(content);
+    if (!summary) {
+      appendEvent("Uploaded agenda file was empty.");
+      return;
+    }
+
+    state.agendaUploadText = summary;
+    state.agendaUploadName = file.name;
+    updateAgendaUploadStatus();
+    rebuildAgendaContext({ announce: true });
+  };
+  reader.onerror = () => {
+    appendEvent("Unable to read the uploaded agenda file.");
+  };
+  reader.readAsText(file);
+}
+
 function clearAgenda() {
   state.agendaText = "";
   state.agendaSource = "none";
+  state.agendaUploadText = "";
+  state.agendaUploadName = "";
+  state.agendaNotesText = "";
+  state.observationContextText = "";
   state.capturingAgenda = false;
+  els.agendaInput.value = "";
+  if (els.agendaFileInput) {
+    els.agendaFileInput.value = "";
+  }
+  updateAgendaUploadStatus();
   els.agendaInput.value = "";
   updateAgendaStatus();
   appendEvent("Agenda cleared.");
@@ -267,13 +393,13 @@ function captureVerbalAgenda(text) {
   const spokenAgenda = normalizeAgendaText(text);
   if (!spokenAgenda) return;
 
-  const combinedAgenda = state.agendaText
-    ? `${state.agendaText}\n${spokenAgenda}`
+  const combinedAgenda = state.agendaNotesText
+    ? `${state.agendaNotesText}\n${spokenAgenda}`
     : spokenAgenda;
-  state.agendaText = agendaSummary(combinedAgenda);
+  state.agendaNotesText = agendaSummary(combinedAgenda);
   state.agendaSource = state.agendaSource === "none" ? "verbal" : "updated";
-  els.agendaInput.value = state.agendaText;
-  updateAgendaStatus();
+  els.agendaInput.value = state.agendaNotesText;
+  rebuildAgendaContext({ announce: true });
   appendEvent("Verbal agenda content captured.");
 }
 
@@ -296,7 +422,9 @@ ${state.agendaText}
 
 function eventTitleFromAgenda() {
   if (!state.agendaText) return "";
-  const match = state.agendaText.match(/(?:event\s*title|title)\s*[:\-]\s*([^.;\n]+)/i);
+  const match = state.agendaText.match(
+    /(?:event\s*title|title|topic|theme)\s*[:\-]\s*([^.;\n]+)/i
+  );
   return (match?.[1] || "").trim();
 }
 
@@ -307,17 +435,17 @@ function meetingScopeInstructions() {
 Scope boundary:
 - Stay within the current event context.
 - Stay aligned to the event title: ${eventTitle}.
-- Keep discussion tied to the audience conversation topic.
-- If asked an unrelated personal or social question, decline briefly and redirect to the event topic with one concise question.
+- Do not switch to new participant-introduced topics when they drift from the event title.
+- If asked about an off-topic subject, acknowledge briefly and redirect to the event topic with one concise question.
 `.trim();
   }
 
   return `
 Scope boundary:
 - Stay within the current event context.
-- Stay aligned to the event title when provided by host or audience.
-- Keep discussion tied to the audience conversation topic.
-- If asked an unrelated personal or social question, decline briefly and redirect to the event topic with one concise question.
+- Use only host-provided agenda context to determine topic scope.
+- Do not let participant topic changes redefine the event scope.
+- If no host topic is available, ask one concise question to confirm the official event topic before elaborating.
 `.trim();
 }
 
@@ -343,6 +471,103 @@ function shouldConverse(text) {
     return wasJunoCalled(text) || looksLikeInvitation(text) || /\?\s*$/.test(text);
   }
   return Boolean(text && text.trim());
+}
+
+function splitJunoResponse(text) {
+  const cleaned = (text || "").trim();
+  if (!cleaned) {
+    return { responseText: "", summaryText: "" };
+  }
+
+  const summaryIndex = cleaned.lastIndexOf("\nSummary:");
+  if (summaryIndex === -1) {
+    return { responseText: cleaned, summaryText: "" };
+  }
+
+  const responseText = cleaned.slice(0, summaryIndex).trim();
+  const summaryText = cleaned.slice(summaryIndex + "\nSummary:".length).trim();
+
+  return {
+    responseText: responseText || cleaned,
+    summaryText
+  };
+}
+
+function normalizeSummaryLine(text) {
+  const cleaned = (text || "")
+    .replace(/^summary\s*:\s*/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!cleaned) {
+    return "";
+  }
+
+  // Keep summary abstract and brief; avoid reciting the full audience turn.
+  const withoutQuotedBlocks = cleaned.replace(/"[^"]+"/g, "").replace(/\s+/g, " ").trim();
+  const source = withoutQuotedBlocks || cleaned;
+  const words = source.split(" ").filter(Boolean);
+
+  if (words.length <= 14) {
+    return source;
+  }
+
+  return `${words.slice(0, 14).join(" ")}...`;
+}
+
+function looksLikeParaphrase(candidateText, guestText) {
+  const candidateTokens = (candidateText || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((token) => token.length > 3);
+  const guestTokens = (guestText || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((token) => token.length > 3);
+
+  if (!candidateTokens.length || !guestTokens.length) {
+    return false;
+  }
+
+  const guestSet = new Set(guestTokens);
+  let overlap = 0;
+  candidateTokens.forEach((token) => {
+    if (guestSet.has(token)) {
+      overlap += 1;
+    }
+  });
+
+  return overlap / candidateTokens.length >= 0.6;
+}
+
+function fallbackCommentaryLine() {
+  const options = [
+    "Great point. What is the one decision we should lock in now?",
+    "Nice momentum. Shall we convert this into one clear next action?",
+    "That is useful context. Who owns the immediate next step?",
+    "Strong input. What outcome should we prioritize first?"
+  ];
+
+  const index = Math.floor(Math.random() * options.length);
+  return options[index];
+}
+
+function buildSingleLineJunoOutput(responseText, summaryText) {
+  const summaryLine = normalizeSummaryLine(summaryText);
+  if (summaryLine) {
+    if (looksLikeParaphrase(summaryLine, state.lastGuestTurn)) {
+      return fallbackCommentaryLine();
+    }
+    return summaryLine;
+  }
+
+  const fallback = normalizeSummaryLine(responseText);
+  if (!fallback || looksLikeParaphrase(fallback, state.lastGuestTurn)) {
+    return fallbackCommentaryLine();
+  }
+  return fallback;
 }
 
 function sendEvent(event) {
@@ -612,6 +837,7 @@ function createJunoResponse(reason, extraInstructions = "") {
 You are Juno, the online meeting co-host.
 Current app state: ${state.mode}.
 Reason for this turn: ${reason}.
+Language: Respond exclusively in English unless the participant explicitly requests another language.
 ${agendaInstructions()}
 ${meetingScopeInstructions()}
 ${extraInstructions}
@@ -619,8 +845,11 @@ Use the conversation so far and stay strictly within the current meeting context
 Do not drift into unrelated topics.
 Digest the participant's latest message before responding.
 If the participant response is unclear, missing detail, or ambiguous, ask one concise clarifying probe question.
-Keep the response warm, concise, and useful.
+Keep the response warm, concise, useful, and human.
 If this is your first spoken turn, welcome the meeting participants and acknowledge the host briefly.
+Do not quote, summarize, or restate the participant transcript verbatim.
+Prefer spontaneous commentary that moves the discussion forward.
+Return exactly one short spoken line and nothing else, maximum 14 words.
 `.trim();
 
   const sent = sendEvent({
@@ -678,7 +907,7 @@ function scheduleJunoResponse(reason, audienceText = "") {
     state.pendingAudienceText = "";
 
     const followUpInstructions = scheduledText
-      ? `Latest participant message: "${scheduledText}"\nAcknowledge this message directly and keep your reply anchored to it.`
+      ? `Latest participant message: "${scheduledText}"\nRespond only if this message is within the host-defined event topic. If it is off-topic, do not elaborate on it; redirect back to the event topic in one short line.`
       : "";
 
     createJunoResponse(scheduledReason, followUpInstructions);
@@ -729,6 +958,18 @@ function pauseJuno() {
 
 function handleTranscript(text) {
   appendTurn("Guest", text);
+  state.lastGuestTurn = text || "";
+
+  if (!state.agendaUploadText) {
+    const observedTurn = normalizeAgendaText(text);
+    if (observedTurn) {
+      const nextObservation = state.observationContextText
+        ? `${state.observationContextText}\n${observedTurn}`
+        : observedTurn;
+      state.observationContextText = agendaSummary(nextObservation);
+      rebuildAgendaContext();
+    }
+  }
 
   if (state.capturingAgenda) {
     captureVerbalAgenda(text);
@@ -805,16 +1046,27 @@ function handleServerEvent(event) {
       break;
 
     case "response.output_audio_transcript.done":
-      appendTurn("Juno", event.transcript || state.assistantTranscript);
-      state.assistantTranscript = "";
+      state.assistantTranscript = event.transcript || state.assistantTranscript;
       break;
 
     case "response.done": {
       const junoText = state.assistantTranscript.trim();
       state.assistantTranscript = "";
-      if (state.useElevenLabs && junoText) {
-        appendTurn("Juno", junoText);
-        void speakWithElevenLabs(junoText);
+
+      const { responseText, summaryText } = splitJunoResponse(junoText);
+      const conciseSummary = buildSingleLineJunoOutput(responseText, summaryText);
+
+      appendTurn("Juno", conciseSummary);
+
+      if (conciseSummary) {
+        appendEvent(`Response summary: ${conciseSummary}`);
+        setResponseSummary(conciseSummary);
+      } else {
+        setResponseSummary("");
+      }
+
+      if (state.useElevenLabs && conciseSummary) {
+        void speakWithElevenLabs(conciseSummary);
       } else {
         state.waitingForResponse = false;
         flushQueuedResponse();
@@ -899,13 +1151,63 @@ function stopMeter() {
   });
 }
 
+async function requestSystemAudioStream() {
+  if (!navigator.mediaDevices?.getDisplayMedia) {
+    appendEvent("System audio capture is not supported in this browser.");
+    return null;
+  }
+
+  try {
+    appendEvent("Choose the meeting window/tab and enable Share audio.");
+    const displayStream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: false
+      }
+    });
+
+    const audioTracks = displayStream.getAudioTracks();
+    if (!audioTracks.length) {
+      displayStream.getTracks().forEach((track) => track.stop());
+      appendEvent("No system audio track found. Continuing with microphone only.");
+      return null;
+    }
+
+    return displayStream;
+  } catch {
+    appendEvent("System audio was not shared. Continuing with microphone only.");
+    return null;
+  }
+}
+
+function buildMixedUplinkStream(micStream, systemStream) {
+  if (!systemStream) {
+    return { stream: micStream, mixContext: null };
+  }
+
+  const mixContext = new AudioContext();
+  const destination = mixContext.createMediaStreamDestination();
+
+  const micSource = mixContext.createMediaStreamSource(micStream);
+  micSource.connect(destination);
+
+  const systemSource = mixContext.createMediaStreamSource(systemStream);
+  const systemGain = mixContext.createGain();
+  systemGain.gain.value = 0.9;
+  systemSource.connect(systemGain).connect(destination);
+
+  return { stream: destination.stream, mixContext };
+}
+
 async function connect() {
   if (state.connected || state.connecting) return;
 
   state.connecting = true;
   setControls();
   setConnectionStatus("Connecting");
-  appendEvent("Opening microphone.");
+  appendEvent("Opening microphone and system audio.");
 
   try {
     const pc = new RTCPeerConnection();
@@ -922,16 +1224,33 @@ async function connect() {
       );
     });
 
-    const stream = await navigator.mediaDevices.getUserMedia({
+    const micStream = await navigator.mediaDevices.getUserMedia({
       audio: {
         echoCancellation: true,
         noiseSuppression: true,
         autoGainControl: true
       }
     });
-    state.micStream = stream;
-    stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-    startMeter(stream);
+
+    const systemStream = await requestSystemAudioStream();
+    const { stream: uplinkStream, mixContext } = buildMixedUplinkStream(
+      micStream,
+      systemStream
+    );
+
+    state.micStream = micStream;
+    state.systemStream = systemStream;
+    state.uplinkStream = uplinkStream;
+    state.mixContext = mixContext;
+
+    uplinkStream.getAudioTracks().forEach((track) => pc.addTrack(track, uplinkStream));
+    startMeter(uplinkStream);
+
+    appendEvent(
+      systemStream
+        ? "Observing with microphone + system audio."
+        : "Observing with microphone only."
+    );
 
     const channel = pc.createDataChannel("oai-events");
     state.dc = channel;
@@ -985,20 +1304,34 @@ function disconnect() {
   if (state.micStream) {
     state.micStream.getTracks().forEach((track) => track.stop());
   }
+  if (state.systemStream) {
+    state.systemStream.getTracks().forEach((track) => track.stop());
+  }
+  if (state.uplinkStream) {
+    state.uplinkStream.getTracks().forEach((track) => track.stop());
+  }
+  if (state.mixContext) {
+    state.mixContext.close();
+  }
 
   stopMeter();
   state.pc = null;
   state.dc = null;
   state.micStream = null;
+  state.systemStream = null;
+  state.uplinkStream = null;
+  state.mixContext = null;
   state.connected = false;
   state.connecting = false;
   state.waitingForResponse = false;
   state.assistantTranscript = "";
   state.capturingAgenda = false;
+  setResponseSummary("");
   setConnectionStatus("Offline");
   setMode("observing");
   setControls();
   updateAgendaStatus();
+  updateAgendaUploadStatus();
   appendEvent("Session stopped.");
 }
 
@@ -1023,6 +1356,14 @@ els.clearLogButton.addEventListener("click", () => els.transcriptLog.replaceChil
 els.saveAgendaButton.addEventListener("click", saveDocumentAgenda);
 els.clearAgendaButton.addEventListener("click", clearAgenda);
 els.captureAgendaButton.addEventListener("click", toggleVerbalAgendaCapture);
+els.agendaInput.addEventListener("input", () => {
+  state.agendaNotesText = els.agendaInput.value;
+  rebuildAgendaContext();
+});
+els.agendaFileInput.addEventListener("change", () => {
+  const [file] = els.agendaFileInput.files || [];
+  handleAgendaFileUpload(file);
+});
 els.autoConverseToggle.addEventListener("change", () => {
   state.autoConverse = els.autoConverseToggle.checked;
   updateAutoConverseStatus();
@@ -1042,5 +1383,6 @@ setMode("observing");
 setControls();
 updateAgendaStatus();
 updateAutoConverseStatus();
+setResponseSummary("");
 appendEvent("Ready.");
 void initVoiceMode();

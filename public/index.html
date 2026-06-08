@@ -61,8 +61,14 @@
           </div>
 
           <div class="field">
-            <label class="field-label" for="agendaInput">Agenda topics</label>
-            <textarea id="agendaInput" class="text-area" rows="8" placeholder="Paste or update agenda context"></textarea>
+            <label class="field-label" for="agendaFileInput">Upload agenda</label>
+            <input id="agendaFileInput" class="text-input agenda-file-input" type="file" accept=".txt,.md,.json,.csv,.rtf,.html,.htm,text/plain" />
+            <div id="agendaUploadStatus" class="agenda-upload-status" aria-live="polite">No agenda uploaded</div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="agendaInput">Written context details</label>
+            <textarea id="agendaInput" class="text-area" rows="8" placeholder="Add written context details that should stay attached to the agenda"></textarea>
           </div>
 
           <div id="agendaStatus" class="agenda-status" aria-live="polite">No agenda provided</div>
@@ -107,6 +113,11 @@
           </div>
 
           <div id="transcriptLog" class="transcript-log" aria-live="polite"></div>
+
+          <div class="response-summary-card" aria-live="polite">
+            <span class="response-summary-label">Response Summary</span>
+            <p id="responseSummary" class="response-summary-text">No response summary yet.</p>
+          </div>
 
           <div class="button-row compact">
             <button class="secondary-button" type="button" disabled>Copy</button>

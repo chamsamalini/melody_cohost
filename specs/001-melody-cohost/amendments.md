@@ -11,6 +11,11 @@ Use this file to capture user-requested amendments and track where they were app
 
 ## Amendments
 
+- Date: 2026-06-08
+- Request: Add system-audio observation support, enforce English-only output unless explicitly requested otherwise, keep Juno responses as short single-line commentary, and allow agenda upload with written context plus observation fallback when no upload is provided.
+- Impacted Artifacts: public/index.html, public/app.js, public/styles.css, specs/001-melody-cohost/spec.md, specs/001-melody-cohost/plan.md, specs/001-melody-cohost/tasks.md, specs/001-melody-cohost/analysis.md, specs/001-melody-cohost/implement.md, specs/001-melody-cohost/amendments.md
+- Notes: Added browser display-audio capture path with mic fallback, stricter response style enforcement with anti-paraphrase guardrails, and agenda-context composition from upload, host notes, and observed transcript turns.
+
 - Date: 2026-06-07
 - Request: Ensure any amendment request is automatically included in Spec Kit artifacts.
 - Impacted Artifacts: AGENTS.md, .specify/context-augmentation.md, .specify/memory/constitution.md, specs/001-melody-cohost/amendments.md

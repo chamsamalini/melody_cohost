@@ -70,10 +70,11 @@ run-app.bat
 
 - **Server and configuration**: FR-001 through FR-007, FR-029, FR-030.
 - **Connection and audio flow**: FR-008 through FR-011, FR-016, FR-027.
+- **Connection and audio flow**: FR-008 through FR-011, FR-016, FR-027, FR-049, FR-050.
 - **Host control and activation**: FR-012 through FR-024.
 - **Transcript and logs**: FR-025 and FR-026.
-- **Prompt safety**: FR-028, NFR-004.
-- **Online meeting and agenda context**: FR-031 through FR-040, NFR-013 through NFR-017.
+- **Prompt safety and language guardrails**: FR-028, FR-051 through FR-053, NFR-004, NFR-020, NFR-021.
+- **Online meeting and agenda context**: FR-031 through FR-040, FR-054, NFR-013 through NFR-017.
 - **Security and privacy**: NFR-001, NFR-002, NFR-011.
 - **Validation and maintainability**: NFR-008, NFR-009, NFR-012.
 
@@ -84,11 +85,17 @@ run-app.bat
 - Open `http://localhost:8787`.
 - Verify `/health` returns non-secret readiness metadata.
 - Connect with a browser microphone and confirm observing mode.
+- Connect with microphone plus optional system-audio share and verify fallback to microphone-only when sharing is unavailable.
 - Confirm Juno does not speak until activated.
 - Provide agenda content through the document path and confirm agenda status updates.
+- Upload a readable agenda file and confirm upload status and composed agenda context updates.
+- Verify written context notes update agenda context while preserving uploaded agenda as primary source.
+- Verify observation-derived context is used when no uploaded agenda exists.
 - Provide agenda content verbally and confirm agenda status updates.
 - Confirm Juno uses supplied agenda context when activated.
 - Confirm Juno asks for agenda clarification or stays general when no agenda exists.
+- Confirm Juno output remains single-line, short commentary and does not recap participant turns.
+- Confirm Juno remains English-first unless language switch is explicitly requested.
 - Confirm **Activate Juno**, trigger-name activation, **Pause Juno**, **Stop**, **New Session**, and **Clear** behavior.
 - Confirm missing `OPENAI_API_KEY` yields a readable error.
 
@@ -98,6 +105,8 @@ run-app.bat
 - **Realtime service or credential failure**: Keep `/session` errors client-readable without exposing secrets.
 - **Unwanted speech**: Preserve disabled automatic Realtime responses and app-controlled `response.create`.
 - **Agenda hallucination**: Include agenda context explicitly in response instructions and require clarification when agenda details are missing.
+- **Recap-heavy responses**: Enforce runtime single-line output normalization and anti-paraphrase fallback commentary.
+- **Language drift from background noise**: Keep English-default response guardrails in runtime instructions and output filtering.
 - **Document parsing ambiguity**: Start with readable document text content; defer richer file parsing until a future spec if needed.
 - **Prompt drift**: Keep Juno behavior requirements in constitution, spec, and server instructions.
 - **Over-complexity**: Avoid adding dependencies for baseline requirements.

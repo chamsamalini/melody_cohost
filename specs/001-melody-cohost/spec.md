@@ -148,6 +148,12 @@ The host can pause Juno, stop the session, clear visible transcript, or start a 
 - **FR-046**: The project MUST support desktop execution as a packaged application that runs the same host console and server behavior locally on Windows.
 - **FR-047**: The project MUST support a web deployment target on AWS that runs the same host console and server behavior over HTTPS.
 - **FR-048**: Accepted feature amendments MUST be evaluated and reflected across both desktop and web/AWS targets unless explicitly scoped to one target.
+- **FR-049**: The browser MUST support a host-initiated system-audio capture path for online-meeting observation and MUST continue with microphone-only observation if system audio is unavailable or declined.
+- **FR-050**: When system-audio sharing is requested, the host MUST receive clear UI guidance to select the meeting window/tab and enable audio sharing.
+- **FR-051**: Juno MUST respond in English by default and MUST switch language only when explicitly requested by a participant or host.
+- **FR-052**: Activated Juno output MUST be limited to one short spoken line intended as commentary, not a recap, with a strict brevity cap.
+- **FR-053**: Juno MUST avoid repeating participant turns verbatim and SHOULD provide forward-moving commentary or one concise clarifying question when needed.
+- **FR-054**: The host MUST be able to provide agenda context through uploaded readable text files and written context notes; when no uploaded agenda exists, the system MUST derive context from observed transcript turns without claiming it is host-supplied agenda.
 
 ## Non-Functional Requirements
 
@@ -170,6 +176,8 @@ The host can pause Juno, stop the session, clear visible transcript, or start a 
 - **NFR-017 Document Safety**: Document agenda intake SHOULD reject unsupported or unreadable content with a clear message rather than silently misprocessing it.
 - **NFR-018 Response Pacing**: The host-visible behavior SHOULD avoid rushed turn-taking by applying a brief post-turn hold before Juno responds.
 - **NFR-019 Dual-Target Consistency**: Desktop and web/AWS targets SHOULD preserve equivalent functional behavior for activation flow, agenda handling, context constraints, and safety controls.
+- **NFR-020 Response Brevity**: User-facing Juno output SHOULD stay brief enough to avoid dominating participant airtime and SHOULD remain shorter than typical participant turns.
+- **NFR-021 Language Reliability**: Background non-English audio SHOULD NOT cause language drift when no explicit language-switch request is present.
 
 ## Key Entities
 
@@ -201,3 +209,6 @@ The host can pause Juno, stop the session, clear visible transcript, or start a 
 - **SC-007**: A host can provide an agenda through document content and see agenda status update before activating Juno.
 - **SC-008**: A host can verbally brief Juno on the agenda and see agenda status update after transcription.
 - **SC-009**: Juno can answer an agenda-relevant prompt without inventing agenda items that were not provided.
+- **SC-010**: With system audio sharing enabled, Juno can reference meeting discussion content while still handling microphone-only fallback safely.
+- **SC-011**: In activated mode, Juno output remains a single short line and does not provide multi-line recaps.
+- **SC-012**: Without an uploaded agenda file, observed transcript context is used and identified as observation-derived context in host-visible status.

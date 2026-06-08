@@ -42,12 +42,22 @@
 - [x] T026 Update `README.md` with online-meeting-only scope and agenda input instructions.
 - [x] T027 Record any unresolved browser/device or agenda-document limitations in `specs/001-melody-cohost/analysis.md`.
 
+## Phase 5: Amendment Alignment (2026-06-08)
+
+- [x] T028 Add host-driven system-audio capture with microphone fallback behavior in `public/app.js`.
+- [x] T029 Add agenda upload control plus written context details in `public/index.html` and `public/styles.css`.
+- [x] T030 Compose agenda context from uploaded agenda, written notes, and observation-derived context fallback in `public/app.js`.
+- [x] T031 Enforce English-first response behavior unless explicit language switch is requested in `public/app.js`.
+- [x] T032 Enforce single-line concise Juno output and anti-paraphrase commentary fallback in `public/app.js`.
+- [x] T033 Update Spec Kit artifacts for the 2026-06-08 amendments in `specs/001-melody-cohost/*.md`.
+
 ## Dependencies
 
 - T001 through T003 should complete before requirement verification.
 - T004 through T018 can be reviewed or implemented independently where they touch different files.
 - T019 through T025 can run after the functional review.
 - T026 and T027 depend on validation findings.
+- T028 through T033 depend on completion of baseline host control and agenda flows (T008 through T018).
 
 ## MVP Scope
 

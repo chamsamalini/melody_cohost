@@ -15,7 +15,7 @@
 
 ## Summary
 
-The specification, plan, constitution, and implementation now scope Juno to online meetings only and support meeting agenda context through pasted document content or verbal agenda capture from transcript turns. Agenda context is session-local, visible to the host, and included in Juno response requests when available.
+The specification, plan, constitution, and implementation now scope Juno to online meetings only and support meeting agenda context through uploaded readable text content, written host notes, and verbal/observed transcript capture. Agenda context remains session-local, visible to the host, and included in Juno response requests when available. Current behavior also adds optional system-audio observation with microphone fallback plus strict single-line, English-first response shaping.
 
 ## Consistency Checks
 
@@ -23,15 +23,16 @@ The specification, plan, constitution, and implementation now scope Juno to onli
 | --- | --- | --- |
 | Problem statement coverage | Pass | Requirements cover online-meeting-only scope and agenda supplied by document or verbal briefing. |
 | Constitution alignment | Pass | Constitution names online-meeting scope, agenda grounding, host control, privacy, and validation. |
-| Functional requirements | Pass | Host controls, transcription, agenda document input, verbal agenda capture, status, and agenda-aware responses are represented. |
+| Functional requirements | Pass | Host controls, transcription, agenda upload and written context input, observation fallback, status, and agenda-aware responses are represented. |
 | Non-functional requirements | Pass | Security, privacy, cultural safety, maintainability, agenda privacy, and validation requirements are explicit. |
 | Implementation feasibility | Pass | Agenda state and text-based document input fit current files and architecture. |
 | Secret handling | Pass | API key remains server-side and `.env` remains ignored. |
-| Ambiguity | Watch | Rich document file parsing is not included; current document path supports readable pasted text content. Browser autoplay and microphone behavior can vary by browser/device. |
+| Ambiguity | Watch | Rich file parsing (PDF/DOCX) is not included; current upload path targets readable text content. Browser system-audio sharing behavior and permissions vary by browser/device. |
 
 ## Gaps and Follow-Up
 
 - Rich file parsing for PDF, DOCX, or calendar invites is not implemented.
+- System-audio sharing reliability varies by browser chooser behavior and OS permissions.
 - Auto-converse status warning is now implemented; monitor host feedback for any wording refinements.
 - Consider automated browser tests if this workflow becomes larger or more frequently changed.
 
@@ -47,4 +48,4 @@ The specification, plan, constitution, and implementation now scope Juno to onli
 
 ## Readiness
 
-The artifacts and implementation are aligned for the current text-document and verbal-agenda baseline.
+The artifacts and implementation are aligned for the current readable-text agenda upload, written-context, observation-fallback, and concise single-line commentary baseline.
