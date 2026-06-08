@@ -21,8 +21,8 @@
 - [x] T011 Verify transcript and activity log behavior in `public/app.js` and `public/index.html`.
 - [x] T012 Verify Juno prompt safety instructions in `server.mjs`.
 - [x] T013 Update user-facing copy from live-event framing to online-meeting framing in `README.md`, `server.mjs`, and `public/index.html`.
-- [x] T014 Add document-based agenda input controls and agenda status display in `public/index.html`.
-- [x] T015 Add agenda state, document agenda processing, agenda replacement, and status updates in `public/app.js`.
+- [x] T014 Add host agenda input controls (upload plus written context) and agenda status display in `public/index.html`.
+- [x] T015 Add agenda state, host-supplied agenda processing, agenda replacement, and status updates in `public/app.js`.
 - [x] T016 Add verbal agenda capture flow using transcript events in `public/app.js`.
 - [x] T017 Include agenda context in Juno response instructions in `public/app.js`.
 - [x] T018 Add safeguards so Juno asks for agenda clarification instead of inventing agenda details in `public/app.js` and `server.mjs`.
@@ -47,9 +47,11 @@
 - [x] T028 Add host-driven system-audio capture with microphone fallback behavior in `public/app.js`.
 - [x] T029 Add agenda upload control plus written context details in `public/index.html` and `public/styles.css`.
 - [x] T030 Compose agenda context from uploaded agenda, written notes, and observation-derived context fallback in `public/app.js`.
+- [x] T035 Require explicit host confirmation before promoting observation-derived context to official agenda in `public/app.js` and `public/index.html`.
 - [x] T031 Enforce English-first response behavior unless explicit language switch is requested in `public/app.js`.
 - [x] T032 Enforce single-line concise Juno output and anti-paraphrase commentary fallback in `public/app.js`.
 - [x] T033 Update Spec Kit artifacts for the 2026-06-08 amendments in `specs/001-melody-cohost/*.md`.
+- [x] T034 Enforce strict host-defined event-topic lock and off-topic redirection behavior in `public/app.js`.
 
 ## Dependencies
 
@@ -57,7 +59,7 @@
 - T004 through T018 can be reviewed or implemented independently where they touch different files.
 - T019 through T025 can run after the functional review.
 - T026 and T027 depend on validation findings.
-- T028 through T033 depend on completion of baseline host control and agenda flows (T008 through T018).
+- T028 through T035 depend on completion of baseline host control and agenda flows (T008 through T018).
 
 ## MVP Scope
 

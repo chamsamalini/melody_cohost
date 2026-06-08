@@ -7,7 +7,7 @@
 
 ## Summary
 
-Build and maintain a local browser console for Juno, an AI online-meeting co-host. The system uses a minimal Node.js server to serve static assets and create OpenAI Realtime WebRTC sessions. The browser controls microphone capture, data-channel events, transcript display, activation rules, host controls, and meeting agenda context supplied by document or verbal briefing.
+Build and maintain a local browser console for Juno, an AI online-meeting co-host. The system uses a minimal Node.js server to serve static assets and create OpenAI Realtime WebRTC sessions. The browser controls microphone capture, optional system-audio observation, data-channel events, transcript display, activation rules, host controls, and meeting agenda context supplied by host-uploaded readable text, host notes, or host verbal briefing.
 
 ## Technical Context
 
@@ -63,13 +63,12 @@ run-app.bat
 4. Keep host controls and semantic UI in `public/index.html`.
 5. Keep visual polish and responsive layout in `public/styles.css`.
 6. Keep local startup simple through `npm.cmd start` and `run-app.bat`.
-7. Add agenda context state in the browser so document and verbal agenda inputs can feed Juno response instructions.
+7. Add agenda context state in the browser so uploaded host documents, host notes, and host verbal agenda inputs can feed Juno response instructions.
 8. Keep agenda processing lightweight in the baseline: structure provided content into topics, objectives, order, decisions, and expected outcomes without adding persistence.
 
 ## Requirement Mapping
 
 - **Server and configuration**: FR-001 through FR-007, FR-029, FR-030.
-- **Connection and audio flow**: FR-008 through FR-011, FR-016, FR-027.
 - **Connection and audio flow**: FR-008 through FR-011, FR-016, FR-027, FR-049, FR-050.
 - **Host control and activation**: FR-012 through FR-024.
 - **Transcript and logs**: FR-025 and FR-026.
@@ -87,15 +86,15 @@ run-app.bat
 - Connect with a browser microphone and confirm observing mode.
 - Connect with microphone plus optional system-audio share and verify fallback to microphone-only when sharing is unavailable.
 - Confirm Juno does not speak until activated.
-- Provide agenda content through the document path and confirm agenda status updates.
-- Upload a readable agenda file and confirm upload status and composed agenda context updates.
+- Upload a readable agenda file and confirm upload status and host-supplied agenda context updates.
 - Verify written context notes update agenda context while preserving uploaded agenda as primary source.
-- Verify observation-derived context is used when no uploaded agenda exists.
+- Verify observation-derived context is clearly labeled and confirmed by host before being treated as official agenda.
 - Provide agenda content verbally and confirm agenda status updates.
 - Confirm Juno uses supplied agenda context when activated.
 - Confirm Juno asks for agenda clarification or stays general when no agenda exists.
 - Confirm Juno output remains single-line, short commentary and does not recap participant turns.
 - Confirm Juno remains English-first unless language switch is explicitly requested.
+- Confirm off-topic participant tangents are redirected to the host-defined event topic.
 - Confirm **Activate Juno**, trigger-name activation, **Pause Juno**, **Stop**, **New Session**, and **Clear** behavior.
 - Confirm missing `OPENAI_API_KEY` yields a readable error.
 

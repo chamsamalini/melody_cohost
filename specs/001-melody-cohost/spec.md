@@ -23,6 +23,7 @@ The application must run locally in a browser, use microphone input through a Re
 
 - Provide a simple local host console for connecting an online meeting microphone to Juno.
 - Let the host provide the meeting agenda through a document or verbal briefing.
+- Let the host provide the meeting agenda through uploaded readable document content, written host notes, or verbal host briefing.
 - Process the agenda into usable meeting context for Juno.
 - Keep Juno silent while observing unless activated by host control or trigger-name detection.
 - Show transcript, activity, and agenda-status feedback so the host can understand current state.
@@ -56,9 +57,9 @@ Before or during the online meeting, the host provides an agenda either as docum
 
 **Acceptance Criteria**
 
-- The host can provide agenda content through a document-based path.
+- The host can provide agenda content through an uploaded readable text document path and host-written context notes.
 - The host can provide agenda content verbally through the meeting microphone.
-- The console indicates whether an agenda has been provided and how it was last updated.
+- The console indicates whether agenda context is missing, host-supplied, or updated.
 - Juno uses the agenda only as meeting context and does not invent agenda items that were not provided.
 - The host can replace or update the agenda if the meeting changes.
 
@@ -131,10 +132,10 @@ The host can pause Juno, stop the session, clear visible transcript, or start a 
 - **FR-029**: The server MUST reject missing SDP offers with a client-readable error.
 - **FR-030**: The server MUST reject unsupported HTTP methods with a client-readable error.
 - **FR-031**: The product scope MUST be limited to online meetings and MUST NOT present Juno as a general live-event or in-person co-host.
-- **FR-032**: The host MUST be able to provide a meeting agenda through a document-based input path.
+- **FR-032**: The host MUST be able to provide a meeting agenda through an uploaded readable text-document input path.
 - **FR-033**: The host MUST be able to provide or update a meeting agenda verbally through the microphone and transcript flow.
 - **FR-034**: The system MUST process agenda input into meeting context containing known topics, order, objectives, decisions to reach, and expected outcomes when those details are provided.
-- **FR-035**: The console MUST show whether agenda context is missing, provided from a document, provided verbally, or updated.
+- **FR-035**: The console MUST show whether agenda context is missing, host-supplied, observation-derived, or updated.
 - **FR-036**: Juno MUST use the processed agenda to keep activated responses relevant to the current online meeting.
 - **FR-037**: Juno MUST NOT invent agenda items, decisions, owners, or outcomes that were not provided by the host or participants.
 - **FR-038**: If Juno is activated before any agenda has been provided, Juno MUST ask a concise agenda-clarifying question or give only general meeting support.
@@ -144,7 +145,7 @@ The host can pause Juno, stop the session, clear visible transcript, or start a 
 - **FR-042**: If additional participant speech starts during the response-wait window, the pending response MUST be deferred and re-evaluated from the latest participant message.
 - **FR-043**: Juno responses MUST stay anchored to the current meeting context and the latest participant message, avoiding unrelated topic drift.
 - **FR-044**: When participant intent is unclear or missing detail, Juno MUST ask one concise probing clarification question before giving a full answer.
-- **FR-045**: Juno MUST keep conversational scope limited to the active event context, the event title when provided, and audience conversation based on the current topic; off-topic personal/social requests MUST be declined briefly and redirected back to topic.
+- **FR-045**: Juno MUST keep conversational scope limited to the host-defined active event context and event title when provided; participant-introduced off-topic tangents MUST NOT redefine scope and MUST be redirected back to the event topic.
 - **FR-046**: The project MUST support desktop execution as a packaged application that runs the same host console and server behavior locally on Windows.
 - **FR-047**: The project MUST support a web deployment target on AWS that runs the same host console and server behavior over HTTPS.
 - **FR-048**: Accepted feature amendments MUST be evaluated and reflected across both desktop and web/AWS targets unless explicitly scoped to one target.
@@ -153,7 +154,7 @@ The host can pause Juno, stop the session, clear visible transcript, or start a 
 - **FR-051**: Juno MUST respond in English by default and MUST switch language only when explicitly requested by a participant or host.
 - **FR-052**: Activated Juno output MUST be limited to one short spoken line intended as commentary, not a recap, with a strict brevity cap.
 - **FR-053**: Juno MUST avoid repeating participant turns verbatim and SHOULD provide forward-moving commentary or one concise clarifying question when needed.
-- **FR-054**: The host MUST be able to provide agenda context through uploaded readable text files and written context notes; when no uploaded agenda exists, the system MUST derive context from observed transcript turns without claiming it is host-supplied agenda.
+- **FR-054**: The host MUST be able to provide agenda context through uploaded readable text files and written context notes; when no uploaded agenda exists, the system MAY derive observation context from transcript turns for temporary guidance, but it MUST label that context as observation-derived and MUST confirm host acceptance before treating it as official agenda context.
 
 ## Non-Functional Requirements
 
@@ -188,7 +189,7 @@ The host can pause Juno, stop the session, clear visible transcript, or start a 
 - **Trigger Name**: Host-configurable word or phrase that can activate Juno.
 - **Response Request**: App-sent instruction asking Juno to produce audio.
 - **Meeting Agenda**: Host-provided document or verbal briefing that defines topics, order, objectives, decisions, and expected outcomes.
-- **Agenda Source**: The method that last supplied agenda context: none, document, verbal, or updated.
+- **Agenda Source**: The method that last supplied context: none, host-uploaded, host-written, host-verbal, observation-derived, or updated.
 
 ## Assumptions
 
@@ -196,7 +197,7 @@ The host can pause Juno, stop the session, clear visible transcript, or start a 
 - The browser supports WebRTC, microphone permissions, and autoplay behavior suitable for returned audio.
 - The meeting host accepts ephemeral local transcript and agenda display without persistence.
 - The app is intended for a single local host console in the baseline.
-- A document agenda can be supplied as readable text content in the baseline unless a future implementation plan adds richer file parsing.
+- An uploaded agenda can be supplied as readable text content in the baseline unless a future implementation plan adds richer file parsing.
 
 ## Success Criteria
 
@@ -206,7 +207,7 @@ The host can pause Juno, stop the session, clear visible transcript, or start a 
 - **SC-004**: Saying the configured trigger name activates Juno when she is observing.
 - **SC-005**: Stopping the session releases the microphone and returns the console to offline/observing state.
 - **SC-006**: Missing API key and session-creation failures produce clear user-visible errors.
-- **SC-007**: A host can provide an agenda through document content and see agenda status update before activating Juno.
+- **SC-007**: A host can provide an agenda through uploaded readable text content and see agenda status update before activating Juno.
 - **SC-008**: A host can verbally brief Juno on the agenda and see agenda status update after transcription.
 - **SC-009**: Juno can answer an agenda-relevant prompt without inventing agenda items that were not provided.
 - **SC-010**: With system audio sharing enabled, Juno can reference meeting discussion content while still handling microphone-only fallback safely.
